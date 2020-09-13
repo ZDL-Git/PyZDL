@@ -1,0 +1,39 @@
+import sys
+
+sys.path.append('/usr/local/python')
+
+import cv2
+from openpose import pyopenpose as opp
+from zdl.AI.pose.extractor._extractor import Extractor
+from zdl.utils.io.log import darkThemeColorLogger as logger
+
+
+class OpenposeExtractor(Extractor):
+
+    def __init__(self, params={}):
+        full_params = {
+            'model_folder': self.__class__.model_path,
+            'model_pose': 'BODY_25',
+            'number_people_max': 3,
+            # 'net_resolution': '-1x368', # it is default value
+            'logging_level': 3,
+            'display': 0,
+            'alpha_pose': 0.79,
+            # 'face': 1,
+            # 'hand': 1,
+        }
+        full_params.update(params)
+
+        self.opWrapper = opp.WrapperPython()
+        self.opWrapper.configure(full_params)
+        self.opWrapper.start()
+        self.datum = opp.Datum()
+
+    def extract(self, img):
+        if isinstance(img, str):
+            img = cv2.imread(img)
+        logger.debug(img.shape)
+        self.datum.cvInputData = img
+        self.opWrapper.emplaceAndPop([self.datum])
+        logger.debug(self.datum.poseKeypoints)
+        return self.datum
