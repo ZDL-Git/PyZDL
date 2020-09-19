@@ -1,6 +1,7 @@
 import sys
 
 sys.path.append('/usr/local/python')
+sys.path.append('/usr/local/lib')
 
 from openpose import pyopenpose as opp
 from zdl.AI.pose.extractor._extractor import Extractor
