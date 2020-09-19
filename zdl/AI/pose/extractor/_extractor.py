@@ -3,7 +3,7 @@ from typing import Union, List, Callable
 
 import cv2
 import numpy as np
-from zdl.utils.io.log import darkThemeColorLogger as logger
+from zdl.utils.io.log import logger
 
 
 class Extractor(ABC):

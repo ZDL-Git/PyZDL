@@ -4,7 +4,7 @@ sys.path.append('/usr/local/python')
 
 from openpose import pyopenpose as opp
 from zdl.AI.pose.extractor._extractor import Extractor
-from zdl.utils.io.log import darkThemeColorLogger as logger
+from zdl.utils.io.log import logger
 
 
 class OpenposeExtractor(Extractor):
