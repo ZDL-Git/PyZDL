@@ -15,6 +15,8 @@ def get_version(rel_path):
 PACKAGES = find_namespace_packages(include=['zdl.*'])
 PACKAGE_DATA = {}
 REQUIRED_PACKAGES = [
+    'numpy',
+    'opencv-python',
 ]
 VERSION = get_version('zdl/AI/__init__.py')
 
