@@ -33,7 +33,7 @@ except ModuleNotFoundError:
 
 class ObjectDetector(ABC):
     @classmethod
-    def mtype(cls, model):
+    def _mtype(cls, model):
         if model.startswith(('https:', 'https:')):
             return HubObjectDetector
         elif os.path.isdir(model):
@@ -43,7 +43,7 @@ class ObjectDetector(ABC):
 
     @classmethod
     def create(cls, model):
-        return cls.mtype(model)().loadModel(model)
+        return cls._mtype(model)().loadModel(model)
 
     @abstractmethod
     def _loadModel(self, model):
@@ -51,14 +51,14 @@ class ObjectDetector(ABC):
 
     def loadModel(self, model):
         model_loadable, signature = self._loadModel(model)
-        self.detector = hub.load(model_loadable).signatures[signature]
+        self._detector = hub.load(model_loadable).signatures[signature]
         return self
 
     def modelInfo(self):
         logger.info(f'=====model info====='
-                    f'inputs: {self.detector.inputs}'
-                    f'output_dtypes: {self.detector.output_dtypes}'
-                    f'output_shapes: {self.detector.output_shapes}'
+                    f'inputs: {self._detector.inputs}'
+                    f'output_dtypes: {self._detector.output_dtypes}'
+                    f'output_shapes: {self._detector.output_shapes}'
                     f'label_map: {self._getLabelMap()}')
 
     @abstractmethod
@@ -72,8 +72,8 @@ class ObjectDetector(ABC):
     # @timeit
     def detect(self, image):
         def detect_single_img(tensor):
-            converted_img = tf.image.convert_image_dtype(tensor, self.detector.inputs[0].dtype)[tf.newaxis, ...]
-            raw_result = self.detector(converted_img)
+            converted_img = tf.image.convert_image_dtype(tensor, self._detector.inputs[0].dtype)[tf.newaxis, ...]
+            raw_result = self._detector(converted_img)
             box_entities = self._parseDetectResult(raw_result)
             logger.debug(f'Detect original result: {raw_result}')
             return raw_result, box_entities
@@ -105,8 +105,8 @@ class HubObjectDetector(ObjectDetector):
 
 class GardenObjectDetector(ObjectDetector):
     def __init__(self):
-        self.path_to_labels = 'models/research/object_detection/data/mscoco_label_map.pbtxt'
-        self.label_map = None
+        self._path_to_labels = 'models/research/object_detection/data/mscoco_label_map.pbtxt'
+        self._label_map = None
 
     def _loadModel(self, model):
         base_url = 'http://download.tensorflow.org/models/object_detection/'
@@ -120,11 +120,11 @@ class GardenObjectDetector(ObjectDetector):
         return model_loadable, signature
 
     def _getLabelMap(self):
-        if not self.label_map:
-            assert self.path_to_labels, 'path_to_labels is None!'
-            self.label_map = label_map_util.create_category_index_from_labelmap(
-                self.path_to_labels, use_display_name=True)
-        return self.label_map
+        if not self._label_map:
+            assert self._path_to_labels, 'path_to_labels is None!'
+            self._label_map = label_map_util.create_category_index_from_labelmap(
+                self._path_to_labels, use_display_name=True)
+        return self._label_map
 
     def _parseDetectResult(self, raw_result):
         result = {key: value.numpy() for key, value in raw_result.items()}
@@ -143,12 +143,12 @@ class GardenObjectDetector(ObjectDetector):
 
 class RetrainedObjectDetector(GardenObjectDetector):
     def __init__(self):
-        self.path_to_labels = None
-        self.label_map = None
+        self._path_to_labels = None
+        self._label_map = None
 
     def _loadModel(self, model):
-        self.path_to_labels = os.path.join(model, '..', 'label_map.pbtxt')
-        assert os.path.exists(self.path_to_labels)
+        self._path_to_labels = os.path.join(model, '..', 'label_map.pbtxt')
+        assert os.path.exists(self._path_to_labels)
         model_loadable = model
         signature = 'serving_default'
         return model_loadable, signature
