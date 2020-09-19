@@ -1,12 +1,11 @@
 import os
 from abc import ABC, abstractmethod
 
-import cv2
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
-from zdl.utils.env.installer.terminal import Terminal
 from zdl.utils.env.require import requireTF
+from zdl.utils.env.terminal import Terminal
 from zdl.utils.io.log import logger
 
 # Patch the location of gfile
@@ -29,6 +28,7 @@ try:
 except ModuleNotFoundError:
     logger.warning('installing object_detection package.')
     installObjectDetectionPackage()
+    from object_detection.utils import label_map_util
 
 
 class ObjectDetector(ABC):
