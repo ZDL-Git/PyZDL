@@ -1,3 +1,2 @@
-from . import pose
-
 __version__ = '1.0'
+__all__ = ['pose']
