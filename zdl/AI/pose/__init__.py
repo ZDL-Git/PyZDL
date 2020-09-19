@@ -1,1 +1,1 @@
-__all__ = ['extractor']
+__all__ = ['extractor', 'pose']
