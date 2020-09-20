@@ -9,9 +9,9 @@ from zdl.AI.pose.pose.pose import Pose
 
 
 class Extractor(ABC):
+    model_path = None
 
     def __init__(self):
-        self.model_path = None
         self.pre_hooks = []
         self.pose_type: Type[Pose] = None
 
@@ -25,9 +25,9 @@ class Extractor(ABC):
         for h in self.pre_hooks:
             h(img)
 
-    def setModel(self, path):
-        self.model_path = path
-        return self
+    @classmethod
+    def setModel(cls, path):
+        cls.model_path = path
 
     def addPreHooks(self, hook_or_hooks: Union[Callable, List[Callable[[np.ndarray], None]]]):
         if isinstance(hook_or_hooks, Callable):
@@ -46,5 +46,5 @@ class Extractor(ABC):
             logger.debug(img.shape)
 
         self._callPreHooks(img)
-        pose = self._callExtractorCore(img)
-        return pose
+        poses, others = self._callExtractorCore(img)
+        return poses, others

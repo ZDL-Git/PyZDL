@@ -1,7 +1,8 @@
 import sys
+from typing import Tuple
 
 from zdl.AI.pose.pose.body25b import BODY25B
-from zdl.AI.pose.pose.pose import Pose
+from zdl.AI.pose.pose.pose import Poses
 
 sys.path.append('/usr/local/python')
 sys.path.append('/usr/local/lib')
@@ -38,8 +39,8 @@ class OpenposeExtractor(Extractor):
         self.opWrapper.start()
         self.datum: opp.Datum = opp.Datum()
 
-    def _callExtractorCore(self, img) -> Pose:
+    def _callExtractorCore(self, img) -> Tuple:
         self.datum.cvInputData = img
         self.opWrapper.emplaceAndPop([self.datum])
         logger.debug(self.datum.poseKeypoints)
-        return self.pose_type(self.datum.poseKeypoints)
+        return Poses(self.datum.poseKeypoints, self.pose_type), self.datum
