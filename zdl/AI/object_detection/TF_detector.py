@@ -17,7 +17,7 @@ requireTF('2')
 
 
 def installObjectDetectionPackage():
-    Terminal.shellCall('git clone --depth 1 https://github.com/tensorflow/models.git '
+    Terminal.checkCall('git clone --depth 1 https://github.com/tensorflow/models.git '
                        '&& cd models/research/ '
                        '&& protoc object_detection/protos/*.proto --python_out=. '
                        '&& pip install .')
