@@ -8,7 +8,7 @@ class BODY25B(Pose):
 
     def __init__(self, key_points):
         super(BODY25B, self).__init__(key_points)
-        assert GPU.supported(), 'BODY_25B only support GPU mode!'
+        assert GPU.supported(), 'BODY_25B only supports GPU mode!'
 
     @classmethod
     def partsIndices(self):
