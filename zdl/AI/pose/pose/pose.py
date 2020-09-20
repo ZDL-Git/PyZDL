@@ -10,7 +10,7 @@ from zdl.utils.media.point import Point
 
 class Pose(ABC):
     def __init__(self, key_points):
-        assert key_points.ndim == 2, 'Should be a 2D pose!'
+        assert key_points.ndim == 2, f'Should be a 2D pose! shape: {key_points.shape}'
         self.key_points = key_points
         self._center = None
 

@@ -38,7 +38,7 @@ class Extractor(ABC):
             raise TypeError('hook_or_hooks type error!')
         return self
 
-    def extract(self, img, silent=False):
+    def extract(self, img, silent=True):
         # entry function
         if not silent:
             if isinstance(img, str):
