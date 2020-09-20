@@ -7,8 +7,8 @@ class COCO(Pose):
     def __init__(self, key_points):
         super(COCO, self).__init__(key_points)
 
-    @classmethod
-    def partsIndices(self):
+    @property
+    def parts_indices(self):
         # right to left, up to down.
         indices = {}
         indices['face'] = [0, 14, 15, 16, 17]
@@ -24,3 +24,7 @@ class COCO(Pose):
         indices['knee_and_below'] = [9, 12, 10, 13]
 
         return indices
+
+    @property
+    def sections(self):
+        return [[16, 14, 0, 15, 17], [0, 1], [1, 2, 3, 4], [1, 5, 6, 7], [1, 8, 9, 10], [1, 11, 12, 13]]

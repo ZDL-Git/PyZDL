@@ -10,8 +10,8 @@ class BODY25B(Pose):
         super(BODY25B, self).__init__(key_points)
         assert GPU.supported(), 'BODY_25B only supports GPU mode!'
 
-    @classmethod
-    def partsIndices(self):
+    @property
+    def parts_indices(self):
         # right to left, up to down.
         indices = {}
         indices['face'] = [0, 1, 2, 3, 4]
@@ -27,3 +27,8 @@ class BODY25B(Pose):
         indices['knee_and_below'] = [13, 14, 15, 16, 19, 20, 21, 22, 23, 24]
 
         return indices
+
+    @property
+    def sections(self):
+        return [[4, 2, 0, 1, 3], [18, 17, 6, 12, 11, 5, 17], [6, 8, 10], [5, 7, 9], [12, 14, 16],
+                [11, 13, 15], [16, 22, 23, 16, 24], [15, 19, 20, 15, 21]]
