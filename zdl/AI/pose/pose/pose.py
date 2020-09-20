@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Type
 
 import numpy as np
 from numba import jit
@@ -134,7 +134,7 @@ class Pose(ABC):
 
 
 class Poses:
-    def __init__(self, all_keypoints, pose_type):
+    def __init__(self, all_keypoints, pose_type: Type[Pose]):
         """
 
         :param all_keypoints:
@@ -142,6 +142,7 @@ class Poses:
         """
         assert all_keypoints.ndim in [0, 3], 'poses shape error!'
         self.all_keypoints = all_keypoints
+        self.pose_type = pose_type
         self.poses = [pose_type(keypoints) for keypoints in all_keypoints] if all_keypoints.ndim == 3 else []
 
     def __iter__(self):
@@ -152,6 +153,9 @@ class Poses:
 
     def __len__(self):
         return len(self.poses)
+
+    def partsIndices(self):
+        return self.pose_type.partsIndices()
 
     def cleanup(self, body_parts: List):
         for pose in self.poses:
