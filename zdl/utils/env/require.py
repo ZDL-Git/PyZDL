@@ -2,11 +2,11 @@ import sys
 
 
 def requirePython(v: str, greater_ok: bool = True):
-    sys_version = sys.version_info
-    for i, n in enumerate(v.split('.')):
-        n = int(n)
-        if (not greater_ok and n != sys_version[i]) or (greater_ok and n > sys_version[i]):
-            raise Exception(f'python version not matched, need {v}, got {sys_version}')
+    v_tuple = tuple(map(int, v.split('.')))
+    v_len = len(v_tuple)
+    v_sys = sys.version_info[:v_len]
+    if (not greater_ok and v_tuple != v_sys) or (greater_ok and v_tuple > v_sys):
+        raise Exception(f'python version not matched, need {v}, got {v_sys}')
 
 
 def requireTF(v: str):
