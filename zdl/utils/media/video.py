@@ -7,6 +7,8 @@ import cv2
 import numpy as np
 import pylab
 from scipy.spatial import distance as sci_dist
+# noinspection PyUnresolvedReferences
+from tqdm import tqdm
 
 from zdl.utils.io.log import logger
 from zdl.utils.media.image import ImageCV

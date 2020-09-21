@@ -19,6 +19,7 @@ REQUIRED_PACKAGES = [
     'numba',
     'numpy',
     'opencv-python',
+    'tqdm',
 ]
 VERSION = get_version('version')
 
