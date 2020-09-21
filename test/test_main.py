@@ -16,6 +16,6 @@ if __name__ == '__main__':
         .addPreHooks([lambda x: print(x.shape)]) \
         .addPostHooks([lambda x, y: ImageCV(y.cvOutputData).show()]) \
         .addPostHooks([lambda x, y: sysShow(y.cvOutputData)]) \
-        .extract('/Volumes/CodeYard/Software/code-type/Python/ZDL-AI/resources/media/mike-tyson-full-body.png',
+        .extract('/Volumes/CodeYard/Software/code-type/Python/PyZDL/resources/media/mike-tyson-full-body.png',
                  silent=False)
     logger.info('exit.')

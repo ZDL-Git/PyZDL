@@ -12,28 +12,29 @@ def get_version(rel_path):
             raise RuntimeError("Unable to find version string.")
 
 
-PACKAGES = find_namespace_packages(include=['zdl.*'])
+PACKAGES = find_namespace_packages(where='../../', include=['zdl.utils.*'])
 PACKAGE_DATA = {}
 REQUIRED_PACKAGES = [
     'colorlog',
-    'numpy',
-    'opencv-python',
 ]
-VERSION = get_version('version')
+VERSION = get_version('__init__.py')
 
 print(':::version:::', VERSION)
 print(':::packages:::', PACKAGES)
 
 setup(
-    name='PyZDL',  # 安装后显示的包名，非导入名称
+    name='PyZDL-utils',  # 安装后显示的包名，非导入名称
     version=VERSION,
     packages=PACKAGES,  # 导入名称
+    package_dir={
+        "zdl.utils": "../../zdl/utils",
+    },
     package_data=PACKAGE_DATA,
     install_requires=REQUIRED_PACKAGES,
     python_requires=">=3.3",
     zip_safe=False,
 
     author_email="zdl_daily@163.com",
-    description="This is an personal tool package. pip install git+https://github.com/ZDL-Git/PyZDL",
-    url="https://github.com/ZDL-Git/PyZDL",
+    description="This is an personal tool package. pip install git+https://github.com/ZDL-Git/PyZDL#subdirectory=zdl/utils",
+    url="https://github.com/ZDL-Git/PyZDL/tree/master/zdl/utils",
 )
