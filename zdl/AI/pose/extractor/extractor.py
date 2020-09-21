@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Union, List, Callable, Type
+from typing import Union, List, Callable, Type, Tuple
 
 import cv2
 import numpy as np
-from zdl.utils.io.log import logger
 
+from zdl.AI.helper.openpose import DatumPickleable
 from zdl.AI.pose.pose.pose import Pose, Poses
+from zdl.utils.io.log import logger
 
 
 class Extractor(ABC):
@@ -52,7 +53,7 @@ class Extractor(ABC):
             raise TypeError('hook_or_hooks type error!')
         return self
 
-    def extract(self, img, silent=True):
+    def extract(self, img, silent=True) -> Tuple[Poses, DatumPickleable]:
         # entry function
         if not silent:
             if isinstance(img, str):
@@ -60,6 +61,6 @@ class Extractor(ABC):
             logger.debug(img.shape)
 
         self._callPreHooks(img)
-        poses, others = self._callExtractorCore(img)
-        self._callPostHooks(poses, others)
-        return poses, others
+        poses, datum = self._callExtractorCore(img)
+        self._callPostHooks(poses, datum)
+        return poses, datum
