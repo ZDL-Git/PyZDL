@@ -17,7 +17,7 @@ PACKAGE_DATA = {}
 REQUIRED_PACKAGES = [
     'numpy',
     'opencv-python',
-    'PyZDL-utils @ git+https://github.com/ZDL-Git/PyZDL#subdirectory=utils',
+    'PyZDL-utils @ git+https://github.com/ZDL-Git/PyZDL#subdirectory=zdl/utils',
 ]
 VERSION = get_version('__init__.py')
 
