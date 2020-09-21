@@ -16,6 +16,7 @@ PACKAGES = find_namespace_packages(include=['zdl.*'])
 PACKAGE_DATA = {}
 REQUIRED_PACKAGES = [
     'colorlog',
+    'numba',
     'numpy',
     'opencv-python',
 ]

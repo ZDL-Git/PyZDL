@@ -15,6 +15,7 @@ def get_version(rel_path):
 PACKAGES = find_namespace_packages(where='../../', include=['zdl.AI.*'])
 PACKAGE_DATA = {}
 REQUIRED_PACKAGES = [
+    'numba',
     'numpy',
     'opencv-python',
 ]
