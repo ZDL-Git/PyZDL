@@ -9,7 +9,7 @@ from zdl.utils.media.point import Point
 
 
 class Pose(ABC):
-    def __init__(self, key_points):
+    def __init__(self, key_points: np.ndarray):
         assert key_points.ndim == 2, f'Should be a 2D pose! shape: {key_points.shape}'
         self.key_points = key_points
         self._center = None
@@ -98,7 +98,7 @@ class Pose(ABC):
         return func(self.key_points, another.key_points)
 
     @classmethod
-    @jit
+    # @jit
     def manhattanDistance(cls, pose1, pose2):
         pose1, pose2 = np.asarray(pose1), np.asarray(pose2)
         pose1_nonzero_b, pose2_nonzero_b = pose1 != 0, pose2 != 0
@@ -108,8 +108,8 @@ class Pose(ABC):
         if np.any(pose1_pose2_xy_nonzero):
             dis = abs((pose1 - pose2)[..., :2])
             # Remove the maximum
-            max_elem_position = np.unravel_index(np.argmax(dis, axis=None), dis.shape)
-            pose1_pose2_xy_nonzero[max_elem_position] = False
+            r, c = np.unravel_index(np.argmax(dis, axis=None), dis.shape)
+            pose1_pose2_xy_nonzero[r] = False
             mean_dis = dis[pose1_pose2_xy_nonzero].mean()
         else:
             logger.debug("Poses haven't same nonzero index points, change to use center point dis!")
