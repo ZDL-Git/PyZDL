@@ -116,6 +116,7 @@ _consoleHandler.setLevel(logging.DEBUG)
 orgLogger = logging.getLogger('main')
 # logger.setLevel(logging.DEBUG)
 orgLogger.addHandler(_consoleHandler)
+orgLogger.propagate = False
 
 _darkColorConsoleHandler = colorlog.StreamHandler()
 _darkColorConsoleHandler.setFormatter(
@@ -125,6 +126,7 @@ _darkColorConsoleHandler.setFormatter(
 
 darkThemeColorLogger = colorlog.getLogger('color.dark')
 darkThemeColorLogger.addHandler(_darkColorConsoleHandler)
+darkThemeColorLogger.propagate = False
 
 _lightColorConsoleHandler = colorlog.StreamHandler()
 _lightColorConsoleHandler.setFormatter(
@@ -134,5 +136,6 @@ _lightColorConsoleHandler.setFormatter(
 
 lightThemeColorLogger = colorlog.getLogger('color.light')
 lightThemeColorLogger.addHandler(_lightColorConsoleHandler)
+lightThemeColorLogger.propagate = False
 
 logger = orgLogger
