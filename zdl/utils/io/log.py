@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 
 import colorlog
@@ -76,6 +77,10 @@ def configConsoleLogger(level):
 
 def addFileLogger(file, level=logging.DEBUG, mode='w'):
     # 为了避免麻烦，将color和非color设置合并
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            if handler.baseFilename == os.path.abspath(file):
+                return
     file_handler = logging.FileHandler(file, mode, encoding="utf-8")
     file_handler.setFormatter(logging.Formatter(_FILE_FORMAT))
     file_handler.setLevel(level)
