@@ -21,7 +21,7 @@ class Pose(ABC):
 
     @property
     @abstractmethod
-    def parts_indices(self):
+    def PARTS_INDICES(self):
         # right to left, up to down
         pass
 
@@ -36,7 +36,7 @@ class Pose(ABC):
         pass
 
     def shoulderBreadth(self):
-        r_shoulder, l_shoulder = self.parts_indices['shoulder']
+        r_shoulder, l_shoulder = self.PARTS_INDICES['shoulder']
         if self.key_points[r_shoulder][0] > 0 and self.key_points[l_shoulder][0] > 0:
             breadth = abs(self.key_points[r_shoulder][0] - self.key_points[l_shoulder][0])
         else:
@@ -44,7 +44,7 @@ class Pose(ABC):
         return breadth
 
     def torsoHeight(self):
-        indices = self.parts_indices
+        indices = self.PARTS_INDICES
         r_shoulder, l_shoulder = indices['shoulder'][0], indices['shoulder'][-1]
         r_crotch, l_crotch = indices['crotch'][0], indices['crotch'][-1]
         right_height = abs(self.key_points[r_shoulder][1] - self.key_points[r_crotch][1]) \
@@ -69,7 +69,7 @@ class Pose(ABC):
             cleaning = self.key_points
             self._center = None
         for part in body_parts:
-            cleaning[self.parts_indices[part]] = 0
+            cleaning[self.PARTS_INDICES[part]] = 0
         return cleaning
 
     def center(self, need_type=None):
@@ -161,8 +161,8 @@ class Poses:
         return len(self.poses)
 
     @property
-    def parts_indices(self):
-        return self.pose_type.parts_indices
+    def PARTS_INDICES(self):
+        return self.pose_type.PARTS_INDICES
 
     def cleanup(self, body_parts: List):
         for pose in self.poses:
