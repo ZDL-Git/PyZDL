@@ -1,7 +1,7 @@
 import os
 from functools import reduce
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Union, Tuple, List
 
 import cv2
 import numpy as np
@@ -72,7 +72,7 @@ class Video(Media):
         else:
             return f
 
-    def readDict(self, indices=None, yield_=True):
+    def readDict(self, indices: Union[range, Tuple, List] = None, yield_=True):
         info = self.getInfo()
         if indices is None:
             indices = range(info['frame_c'])
