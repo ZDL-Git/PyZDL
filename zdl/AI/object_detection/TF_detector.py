@@ -1,10 +1,12 @@
 import os
 from abc import ABC, abstractmethod
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
+
+from zdl.AI.object_detection.structs import ObjectDetected
 from zdl.utils.env.require import requireTF
 from zdl.utils.env.terminal import Terminal
 from zdl.utils.io.log import logger
@@ -72,13 +74,13 @@ class ObjectDetector(ABC):
         pass
 
     # @timeit
-    def detect(self, image):
+    def detect(self, image) -> Tuple[Dict, List[ObjectDetected]]:
         def detect_single_img(tensor):
             converted_img = tf.image.convert_image_dtype(tensor, self._detector.inputs[0].dtype)[tf.newaxis, ...]
             raw_result = self._detector(converted_img)
             logger.debug(f'Detect original result: {raw_result}')
-            bbox_entities = self._parseDetectResult(raw_result)
-            return raw_result, bbox_entities
+            object_detected_list = self._parseDetectResult(raw_result)
+            return raw_result, object_detected_list
 
         tensor = tf.convert_to_tensor(image[..., ::-1])
         return detect_single_img(tensor)
@@ -93,16 +95,16 @@ class HubObjectDetector(ObjectDetector):
     def _getLabelMap(self):
         pass
 
-    def _parseDetectResult(self, raw_result):
+    def _parseDetectResult(self, raw_result) -> List[ObjectDetected]:
         result = {key: value.numpy() for key, value in raw_result.items()}
-        scores = result["detection_scores"].flatten()
         class_names = result['detection_class_entities']
+        scores = result["detection_scores"].flatten()
         boxes = result["detection_boxes"]
-        boxes.shape = (-1, boxes.shape[-1])
-        parsed = zip(boxes, class_names, scores)
-        parsed = filter(lambda z: z[2], parsed)
-        parsed = sorted(parsed, key=lambda z: z[2], reverse=True)
-        return list(parsed)
+        boxes = boxes[0]
+        object_detected_list = [ObjectDetected(*t) for t in zip(boxes, class_names, scores) if
+                                t[2]]
+        object_detected_list.sort(key=lambda o: o.score, reverse=True)
+        return object_detected_list
 
 
 class GardenObjectDetector(ObjectDetector):
