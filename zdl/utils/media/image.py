@@ -6,7 +6,7 @@ import types
 from abc import abstractmethod
 from pathlib import Path
 from statistics import mean
-from typing import Tuple
+from typing import Tuple, List
 
 import PIL
 import cv2
@@ -420,28 +420,30 @@ class ImageCV(_ImageBase):
         logger.debug(f'enhanced brightness is {self.brightness()}')
         return self
 
-    def drawBoxes(self, bbox_entities, copy=True):
+    def drawBboxes(self, bbox_entities: List[Tuple], copy=True):
+        """
+        bbox_entities: List[Tuple[rect, label]]
+        """
         # Log.debug(bbox_entities)
         img = self._img.copy() if copy else self._img
         for i, bbox_entity in enumerate(bbox_entities):
-            box, label, score = bbox_entity
-            display_str = "{}:{}: {}%".format(label, i, str(100 * score)[:5])
+            bbox, label = bbox_entity
+            logger.info(label)
             # color = tuple(np.random.randint(256, size=3))
+            xywh_rect = int(bbox[1]), int(bbox[0]), int(bbox[3] - bbox[1]), int(bbox[2] - bbox[0])
             color = tuple(np.random.choice(range(40, 256), size=3))
-            logger.info(display_str)
-            xywh_rect = int(box[1]), int(box[0]), int(box[3] - box[1]), int(box[2] - box[0])
             color_int = tuple(map(int, color))[::-1]
-            str_width = len(display_str) * 12
+            str_width = len(label) * 12
             thickness = 3
             cv2.rectangle(img, rec=xywh_rect, color=color_int, thickness=thickness)
             cv2.rectangle(img, rec=(xywh_rect[0] - thickness, max(0, xywh_rect[1] - 27), str_width, 30),
                           color=color_int, thickness=-1)
-            cv2.putText(img, display_str, org=(xywh_rect[0], max(22, xywh_rect[1] - 5)),
+            cv2.putText(img, label, org=(xywh_rect[0], max(22, xywh_rect[1] - 5)),
                         fontFace=cv2.FONT_HERSHEY_TRIPLEX,
                         fontScale=0.6,
                         color=(0, 0, 0),
                         lineType=cv2.LINE_AA)
-        return self.__class__(img, f'{self.title}:draw_boxes') if copy else self
+        return self.__class__(img, f'{self.title}:draw_bboxes') if copy else self
 
     def drawPoints(self, points, copy=True):
         img = self._img.copy() if copy else self._img
