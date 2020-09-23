@@ -1,4 +1,4 @@
-from zdl.AI.pose.pose.pose import Pose
+from zdl.AI.pose_estimation.pose.pose import Pose
 
 
 class COCO(Pose):

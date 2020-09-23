@@ -8,7 +8,7 @@ from zdl.utils.io.log import logger
 from zdl.utils.media.image import ImageCV
 from zdl.utils.media.point import Point
 
-from zdl.AI.pose.pose.pose import Poses, Pose
+from zdl.AI.pose_estimation.pose.pose import Poses, Pose
 
 
 class DatumPickleable:

@@ -1,6 +1,6 @@
 from zdl.utils.env.gpu import GPU
 
-from zdl.AI.pose.pose.pose import Pose
+from zdl.AI.pose_estimation.pose.pose import Pose
 
 
 class BODY25B(Pose):

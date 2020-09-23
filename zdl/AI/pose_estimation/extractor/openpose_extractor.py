@@ -1,15 +1,15 @@
 import sys
 
 from zdl.AI.helper.openpose import DatumPickleable
-from zdl.AI.pose.pose.body25b import BODY25B
-from zdl.AI.pose.pose.pose import Poses
+from zdl.AI.pose_estimation.extractor.extractor import Extractor
+from zdl.AI.pose_estimation.pose.body25b import BODY25B
+from zdl.AI.pose_estimation.pose.pose import Poses
+from zdl.utils.io.log import logger
 
 sys.path.append('/usr/local/python')
 sys.path.append('/usr/local/lib')
 
 from openpose import pyopenpose as opp
-from zdl.AI.pose.extractor.extractor import Extractor
-from zdl.utils.io.log import logger
 
 
 class OpenposeExtractor(Extractor):
