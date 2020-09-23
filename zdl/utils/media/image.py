@@ -6,6 +6,7 @@ import types
 from abc import abstractmethod
 from pathlib import Path
 from statistics import mean
+from typing import Tuple
 
 import PIL
 import cv2
@@ -300,7 +301,7 @@ class _ImageBase(Media):
         return int(max((ymin - y_d) * h, 0)), int(max((xmin - x_d) * w, 0)) \
             , int(min((ymax + y_d) * h, h)), int(min((xmax + x_d) * w, w))
 
-    def rectDilate(self, abs_rect, dilate_ratio=1):
+    def rectDilate(self, abs_rect, dilate_ratio=1) -> Tuple[int, int, int, int]:
         img_info = self.getInfo()
         h, w = img_info['height'], img_info['width']
         ymin, xmin, ymax, xmax = abs_rect
@@ -419,11 +420,11 @@ class ImageCV(_ImageBase):
         logger.debug(f'enhanced brightness is {self.brightness()}')
         return self
 
-    def drawBoxes(self, box_entities, copy=True):
-        # Log.debug(box_entities)
+    def drawBoxes(self, bbox_entities, copy=True):
+        # Log.debug(bbox_entities)
         img = self._img.copy() if copy else self._img
-        for i, box_entity in enumerate(box_entities):
-            box, label, score = box_entity
+        for i, bbox_entity in enumerate(bbox_entities):
+            box, label, score = bbox_entity
             display_str = "{}:{}: {}%".format(label, i, str(100 * score)[:5])
             # color = tuple(np.random.randint(256, size=3))
             color = tuple(np.random.choice(range(40, 256), size=3))

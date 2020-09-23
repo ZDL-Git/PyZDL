@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+from typing import List, Tuple
 
 import numpy as np
 import tensorflow as tf
@@ -75,9 +76,9 @@ class ObjectDetector(ABC):
         def detect_single_img(tensor):
             converted_img = tf.image.convert_image_dtype(tensor, self._detector.inputs[0].dtype)[tf.newaxis, ...]
             raw_result = self._detector(converted_img)
-            box_entities = self._parseDetectResult(raw_result)
             logger.debug(f'Detect original result: {raw_result}')
-            return raw_result, box_entities
+            bbox_entities = self._parseDetectResult(raw_result)
+            return raw_result, bbox_entities
 
         tensor = tf.convert_to_tensor(image[..., ::-1])
         return detect_single_img(tensor)
@@ -127,7 +128,7 @@ class GardenObjectDetector(ObjectDetector):
                 self._path_to_labels, use_display_name=True)
         return self._label_map
 
-    def _parseDetectResult(self, raw_result):
+    def _parseDetectResult(self, raw_result) -> List[Tuple]:
         result = {key: value.numpy() for key, value in raw_result.items()}
         scores = result["detection_scores"].flatten()
         class_ids = result['detection_classes'].flatten()
