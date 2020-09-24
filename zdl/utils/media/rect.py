@@ -1,5 +1,7 @@
 import numpy as np
 
+from zdl.utils.media.point import Point
+
 
 class Rect:
     def __init__(self, xyxy=None, yxyx=None, xywh=None):
@@ -24,3 +26,9 @@ class Rect:
 
     def toInt(self) -> 'Rect':
         return self.__class__(xyxy=self.xyxy.astype(int))
+
+    def diagonal(self):
+        return (self.w ** 2 + self.h ** 2) ** 0.5
+
+    def center(self):
+        return Point(self.xyxy[0] + self.w / 2, self.xyxy[1] + self.h / 2)
