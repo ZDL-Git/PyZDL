@@ -296,9 +296,9 @@ class _ImageBase(Media):
         img_info = self.getInfo()
         img_h, img_w = img_info['height'], img_info['width']
         y_d, x_d = norm_rect.h * (dilate_ratio - 1), norm_rect.w * (dilate_ratio - 1)
-        xyxy = max((norm_rect.r_t - y_d) * img_h, 0), max((norm_rect.c_l - x_d) * img_w, 0) \
+        yxyx = max((norm_rect.r_t - y_d) * img_h, 0), max((norm_rect.c_l - x_d) * img_w, 0) \
             , min((norm_rect.r_b + y_d) * img_h, img_h), min((norm_rect.c_r + x_d) * img_w, img_w)
-        return Rect(xyxy=xyxy)
+        return Rect(yxyx=yxyx)
 
     def rectDilate(self, abs_rect: Rect, dilate_ratio=1) -> Rect:
         img_info = self.getInfo()
