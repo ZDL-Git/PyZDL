@@ -120,11 +120,11 @@ class DatumPickleable:
                 datums_pk.append(add_one_zero_pose)
                 continue
 
-            ymin, xmin, ymax, xmax = roi_rect
+            ymin, xmin, ymax, xmax = roi_rect.toInt().yxyx
             img_fill[ymin:ymax, xmin:xmax] = datum.cvOutputData
             pks_incr = np.zeros(datum.poseKeypoints.shape, dtype=np.float32)
-            pks_incr[..., 0] = xmin
-            pks_incr[..., 1] = ymin
+            pks_incr[..., 0] = roi_rect.c_l
+            pks_incr[..., 1] = roi_rect.r_t
             pks_incr[datum.poseKeypoints == 0] = 0
             datums_pk.append(datum.poseKeypoints + pks_incr)
 
