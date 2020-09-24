@@ -309,9 +309,8 @@ class _ImageBase(Media):
         xmax = min(w, abs_rect.c_r + (abs_rect.w * (dilate_ratio - 1)))
         return Rect(xyxy=(xmin, ymin, xmax, ymax))
 
-    def roiCopy(self, rect):
-        ymin, xmin, ymax, xmax = rect
-        roi = self.org()[ymin:ymax, xmin:xmax]
+    def roiCopy(self, rect: Rect):
+        roi = self.org()[rect.r_t:rect.r_b, rect.c_l:rect.c_r]
         return self.__class__(np.copy(roi), self.title)
 
     @abstractmethod
