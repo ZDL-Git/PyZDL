@@ -427,15 +427,15 @@ class ImageCV(_ImageBase):
             bbox, label = bbox_entity
             logger.info(label)
             # color = tuple(np.random.randint(256, size=3))
-            xywh_rect = int(bbox[1]), int(bbox[0]), int(bbox[3] - bbox[1]), int(bbox[2] - bbox[0])
+            xywh = bbox.c_l, bbox.r_t, bbox.w, bbox.h
             color = tuple(np.random.choice(range(40, 256), size=3))
             color_int = tuple(map(int, color))[::-1]
             str_width = len(label) * 12
             thickness = 3
-            cv2.rectangle(img, rec=xywh_rect, color=color_int, thickness=thickness)
-            cv2.rectangle(img, rec=(xywh_rect[0] - thickness, max(0, xywh_rect[1] - 27), str_width, 30),
+            cv2.rectangle(img, rec=xywh, color=color_int, thickness=thickness)
+            cv2.rectangle(img, rec=(xywh[0] - thickness, max(0, xywh[1] - 27), str_width, 30),
                           color=color_int, thickness=-1)
-            cv2.putText(img, label, org=(xywh_rect[0], max(22, xywh_rect[1] - 5)),
+            cv2.putText(img, label, org=(xywh[0], max(22, xywh[1] - 5)),
                         fontFace=cv2.FONT_HERSHEY_TRIPLEX,
                         fontScale=0.6,
                         color=(0, 0, 0),
