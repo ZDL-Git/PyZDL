@@ -310,6 +310,7 @@ class _ImageBase(Media):
         return Rect(xyxy=(xmin, ymin, xmax, ymax))
 
     def roiCopy(self, rect: Rect):
+        rect = rect.toInt()
         roi = self.org()[rect.r_t:rect.r_b, rect.c_l:rect.c_r]
         return self.__class__(np.copy(roi), self.title)
 
