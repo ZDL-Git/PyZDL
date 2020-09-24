@@ -10,6 +10,7 @@ from zdl.AI.object_detection.structs import ObjectDetected
 from zdl.utils.env.require import requireTF
 from zdl.utils.env.terminal import Terminal
 from zdl.utils.io.log import logger
+from zdl.utils.media.rect import Rect
 
 # Patch the location of gfile
 tf.gfile = tf.io.gfile
@@ -99,10 +100,11 @@ class HubObjectDetector(ObjectDetector):
         result = {key: value.numpy() for key, value in raw_result.items()}
         class_names = result['detection_class_entities']
         scores = result["detection_scores"].flatten()
-        boxes = result["detection_boxes"]
-        boxes = boxes[0]
-        object_detected_list = [ObjectDetected(*t) for t in zip(boxes, class_names, scores) if
-                                t[2]]
+        bboxes = result["detection_boxes"]
+        # boxes = boxes[0]
+        bboxes.shape = (-1, bboxes.shape[-1])
+        object_detected_list = [ObjectDetected(t[0], Rect(yxyx=t[1]), t[2]) for t in zip(class_names, bboxes, scores)
+                                if t[2]]
         object_detected_list.sort(key=lambda o: o.score, reverse=True)
         return object_detected_list
 
@@ -130,19 +132,19 @@ class GardenObjectDetector(ObjectDetector):
                 self._path_to_labels, use_display_name=True)
         return self._label_map
 
-    def _parseDetectResult(self, raw_result) -> List[Tuple]:
+    def _parseDetectResult(self, raw_result) -> List[ObjectDetected]:
         result = {key: value.numpy() for key, value in raw_result.items()}
         scores = result["detection_scores"].flatten()
         class_ids = result['detection_classes'].flatten()
-        boxes = result["detection_boxes"]
-        boxes.shape = (-1, boxes.shape[-1])
+        bboxes = result["detection_boxes"]
+        bboxes.shape = (-1, bboxes.shape[-1])
         num_detections = int(result["num_detections"][0])
         label_map = self._getLabelMap()
         class_names = np.array([label_map[i]['name'] for i in class_ids])
-        parsed = zip(boxes, class_names, scores)
-        parsed = filter(lambda z: z[2], parsed)
-        parsed = sorted(parsed, key=lambda z: z[2], reverse=True)
-        return list(parsed)
+        object_detected_list = [ObjectDetected(t[0], Rect(yxyx=t[1]), t[2]) for t in zip(class_names, bboxes, scores)
+                                if t[2]]
+        object_detected_list.sort(key=lambda o: o.score, reverse=True)
+        return object_detected_list
 
 
 class RetrainedObjectDetector(GardenObjectDetector):
