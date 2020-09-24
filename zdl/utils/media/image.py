@@ -17,6 +17,7 @@ from scipy.spatial import distance as sci_dist
 
 from zdl.utils.io.log import logger
 from zdl.utils.media.media import Media, FIGSIZE, IMG_SUFFIXES
+from zdl.utils.media.rect import Rect
 from zdl.utils.time.counter import timeit
 
 
@@ -291,26 +292,22 @@ class _ImageBase(Media):
         xywh_rect_h = int(min((ymax + y_d) * h, h) - xywh_rect_y)
         return xywh_rect_x, xywh_rect_y, xywh_rect_w, xywh_rect_h
 
-    def normRectToAbsRect(self, norm_rect, dilate_ratio=1):
-        # return ymin,xmin,ymax,xmax
+    def normRectToAbsRect(self, norm_rect: Rect, dilate_ratio=1) -> Rect:
         img_info = self.getInfo()
-        h, w = img_info['height'], img_info['width']
-        ymin, xmin, ymax, xmax = norm_rect
-        y_l, x_l = ymax - ymin, xmax - xmin
-        y_d, x_d = y_l * (dilate_ratio - 1), x_l * (dilate_ratio - 1)
-        return int(max((ymin - y_d) * h, 0)), int(max((xmin - x_d) * w, 0)) \
-            , int(min((ymax + y_d) * h, h)), int(min((xmax + x_d) * w, w))
+        img_h, img_w = img_info['height'], img_info['width']
+        y_d, x_d = norm_rect.h * (dilate_ratio - 1), norm_rect.w * (dilate_ratio - 1)
+        xyxy = max((norm_rect.r_t - y_d) * img_h, 0), max((norm_rect.c_l - x_d) * img_w, 0) \
+            , min((norm_rect.r_b + y_d) * img_h, img_h), min((norm_rect.c_r + x_d) * img_w, img_w)
+        return Rect(xyxy=xyxy)
 
-    def rectDilate(self, abs_rect, dilate_ratio=1) -> Tuple[int, int, int, int]:
+    def rectDilate(self, abs_rect: Rect, dilate_ratio=1) -> Rect:
         img_info = self.getInfo()
         h, w = img_info['height'], img_info['width']
-        ymin, xmin, ymax, xmax = abs_rect
-        rect_w, rect_h = xmax - xmin, ymax - ymin
-        ymin = max(0, ymin - (rect_h * (dilate_ratio - 1)))
-        ymax = min(h, ymax + (rect_h * (dilate_ratio - 1)))
-        xmin = max(0, xmin - (rect_w * (dilate_ratio - 1)))
-        xmax = min(w, xmax + (rect_w * (dilate_ratio - 1)))
-        return int(ymin), int(xmin), int(ymax), int(xmax)
+        ymin = max(0, abs_rect.r_t - (abs_rect.h * (dilate_ratio - 1)))
+        ymax = min(h, abs_rect.r_b + (abs_rect.h * (dilate_ratio - 1)))
+        xmin = max(0, abs_rect.c_l - (abs_rect.w * (dilate_ratio - 1)))
+        xmax = min(w, abs_rect.c_r + (abs_rect.w * (dilate_ratio - 1)))
+        return Rect(xyxy=(xmin, ymin, xmax, ymax))
 
     def roiCopy(self, rect):
         ymin, xmin, ymax, xmax = rect
@@ -420,7 +417,7 @@ class ImageCV(_ImageBase):
         logger.debug(f'enhanced brightness is {self.brightness()}')
         return self
 
-    def drawBboxes(self, bbox_entities: List[Tuple], copy=True):
+    def drawBboxes(self, bbox_entities: List[Tuple[Rect, str]], copy=True):
         """
         bbox_entities: List[Tuple[rect, label]]
         """
