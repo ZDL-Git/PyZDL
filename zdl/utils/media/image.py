@@ -6,7 +6,7 @@ import types
 from abc import abstractmethod
 from pathlib import Path
 from statistics import mean
-from typing import Tuple, List
+from typing import Tuple, List, Callable
 
 import PIL
 import cv2
@@ -318,7 +318,7 @@ class _ImageBase(Media):
     def enhanceBrightnessTo(self, target_brightness):
         pass
 
-    def apply(self, func):
+    def apply(self, func: Callable) -> '_ImageBase':
         # func: one input param img, return img processed
         self._img = func(self.org())
         return self
@@ -422,7 +422,7 @@ class ImageCV(_ImageBase):
         bbox_entities: List[Tuple[rect, label]]
         """
         # Log.debug(bbox_entities)
-        img = self._img.copy() if copy else self._img
+        img = self.org().copy() if copy else self.org()
         for i, bbox_entity in enumerate(bbox_entities):
             bbox, label = bbox_entity
             logger.info(label)
@@ -443,7 +443,7 @@ class ImageCV(_ImageBase):
         return self.__class__(img, f'{self.title}:draw_bboxes') if copy else self
 
     def drawPoints(self, points, copy=True):
-        img = self._img.copy() if copy else self._img
+        img = self.org().copy() if copy else self.org()
         for p in points:
             cv2.circle(img, p, radius=10, color=(0, 0, 0), thickness=-1)
             cv2.circle(img, p, radius=10, color=(255, 255, 255), thickness=2)
