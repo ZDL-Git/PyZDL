@@ -184,7 +184,9 @@ class _ImageBase(Media):
     def brightness(self):
         pass
 
-    def hist(self, show=True, hist_size=[256]):
+    def hist(self, show=True, hist_size=None):
+        if hist_size is None:
+            hist_size = [256]
         assert 256 % hist_size[0] == 0, 'histSize should be 256 factor!'
         step = int(256 / hist_size[0])
         hists = []
@@ -252,8 +254,10 @@ class _ImageBase(Media):
         diff_ = cv2.absdiff(self.gray().org(), another.gray().org())
         return self.__class__(diff_, imshow_params={'cmap': 'Greys_r'})
 
-    def distanceHist(self, another, method=sci_dist.euclidean, hist_size=[256], gray=False,
+    def distanceHist(self, another, method=sci_dist.euclidean, hist_size=None, gray=False,
                      show=True):
+        if hist_size is None:
+            hist_size = [256]
         assert isinstance(method, types.FunctionType), 'method should be a function!'
         if isinstance(another, np.ndarray):
             another = self.__class__(another)
@@ -327,8 +331,10 @@ class _ImageBase(Media):
 class ImageCV(_ImageBase):
     CHANNELS_ORDER = ('b', 'g', 'r')
 
-    def __init__(self, media, title=None, imshow_params={}, hold=False):
+    def __init__(self, media, title=None, imshow_params=None, hold=False):
         super().__init__()
+        if imshow_params is None:
+            imshow_params = {}
         if isinstance(media, np.ndarray):
             self._img = ImgArray(media)
             self.fname = None
@@ -453,8 +459,10 @@ class ImageCV(_ImageBase):
 class ImagePIL(_ImageBase):
     CHANNELS_ORDER = ('r', 'g', 'b')
 
-    def __init__(self, media, title=None, imshow_params={}, hold=False):
+    def __init__(self, media, title=None, imshow_params=None, hold=False):
         super().__init__()
+        if imshow_params is None:
+            imshow_params = {}
         if isinstance(media, PIL.Image.Image):
             self._img = media
             self.fname = None

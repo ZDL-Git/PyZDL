@@ -14,7 +14,9 @@ from openpose import pyopenpose as opp
 
 class OpenposeExtractor(Extractor):
 
-    def __init__(self, pose_type=BODY25B, params={}):
+    def __init__(self, pose_type=BODY25B, params=None):
+        if params is None:
+            params = {}
         if 'model_pose' in params:
             logger.warning('model_pose param specified by pose_type arg, conflict.')
         super().__init__()

@@ -142,7 +142,9 @@ class OpenposeInstaller(Installer):
         raise Exception('please use onlineInstall or installGreenVersion!')
 
     @classmethod
-    def test(cls, imagepath_or_obj, params={}):
+    def test(cls, imagepath_or_obj, params=None):
+        if params is None:
+            params = {}
         if isinstance(imagepath_or_obj, str):
             img = cv2.imread(imagepath_or_obj)
         else:
