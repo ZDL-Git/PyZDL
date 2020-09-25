@@ -427,7 +427,7 @@ class ImageCV(_ImageBase):
             bbox, label = bbox_entity
             logger.info(label)
             # color = tuple(np.random.randint(256, size=3))
-            xywh = int(bbox.c_l), int(bbox.r_t), int(bbox.w), int(bbox.h)
+            xywh = tuple(bbox.toInt().xywh)
             color = tuple(np.random.choice(range(40, 256), size=3))
             color_int = tuple(map(int, color))[::-1]
             str_width = len(label) * 12
