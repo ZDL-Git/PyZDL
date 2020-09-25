@@ -56,8 +56,8 @@ class OpenposeInstaller(Installer):
 
             # build openpose
             cmake_c = cls.CMAKE_DEBUG_CMD if mode == 'GPU' else cls.CMAKE_CPU_DEBUG_CMD
-            compile = f'cd {cls.OPENPOSE_PATH} && rm - rf build || true && mkdir build && cd build && {cmake_c} && make - j `nproc` && make install'
-            cls.checkCall(compile)
+            compile_c = f'cd {cls.OPENPOSE_PATH} && rm - rf build || true && mkdir build && cd build && {cmake_c} && make - j `nproc` && make install'
+            cls.checkCall(compile_c)
         else:
             logger.warning(f'[{cls.OPENPOSE_PATH}] already exists!')
 
@@ -169,12 +169,12 @@ class OpenposeInstaller(Installer):
         }
         full_params.update(params)
 
-        opWrapper = opp.WrapperPython()
-        opWrapper.configure(full_params)
-        opWrapper.start()
+        op_wrapper = opp.WrapperPython()
+        op_wrapper.configure(full_params)
+        op_wrapper.start()
         datum = opp.Datum()
         datum.cvInputData = img
-        opWrapper.emplaceAndPop([datum])
+        op_wrapper.emplaceAndPop([datum])
         logger.debug(datum.poseKeypoints)
         return datum
 

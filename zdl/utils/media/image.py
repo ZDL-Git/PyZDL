@@ -41,19 +41,19 @@ class ImgArray(np.ndarray):
         return ImageCV(self)
 
 
-def sysShow(imagePathOrObj):
-    if isinstance(imagePathOrObj, str):
-        imagePath = imagePathOrObj
+def sysShow(imagepath_or_obj):
+    if isinstance(imagepath_or_obj, str):
+        image_path = imagepath_or_obj
     else:
         # you can save manually in system viewer
         with tempfile.NamedTemporaryFile(mode="wb", suffix='.png') as png:
-            imagePath = png.name
-        cv2.imwrite(imagePath, imagePathOrObj)
-    logger.debug(imagePath)
-    imageViewerCommand = {'linux': 'xdg-open',
+            image_path = png.name
+        cv2.imwrite(image_path, imagepath_or_obj)
+    logger.debug(image_path)
+    image_viewer_command = {'linux': 'xdg-open',
                           'win32': 'explorer',
                           'darwin': 'open'}[sys.platform]
-    subprocess.run([imageViewerCommand, imagePath])
+    subprocess.run([image_viewer_command, image_path])
 
 
 class _ImageBase(Media):
@@ -92,8 +92,8 @@ class _ImageBase(Media):
         for i, c in enumerate(cv2.split(self.org())):
             logger.info(f"channel {i}:")
             logger.info(f"  mean:", c.mean())
-            sum, full = c.sum(), c.size * 255
-            logger.info("  sum: {}/{} {:.2f}%".format(sum, full, sum / full * 100))
+            sum_, full = c.sum(), c.size * 255
+            logger.info("  sum: {}/{} {:.2f}%".format(sum_, full, sum_ / full * 100))
         return self
 
     def hold(self, hold):
@@ -184,19 +184,19 @@ class _ImageBase(Media):
     def brightness(self):
         pass
 
-    def hist(self, show=True, histSize=[256]):
-        assert 256 % histSize[0] == 0, 'histSize should be 256 factor!'
-        step = int(256 / histSize[0])
+    def hist(self, show=True, hist_size=[256]):
+        assert 256 % hist_size[0] == 0, 'histSize should be 256 factor!'
+        step = int(256 / hist_size[0])
         hists = []
         if self.isColor():
             for i, col in enumerate(self.CHANNELS_ORDER):
-                hist = cv2.calcHist([self.org()], [i], None, histSize, [0, 256])
+                hist = cv2.calcHist([self.org()], [i], None, hist_size, [0, 256])
                 hist_trans = hist.transpose().ravel()
                 if show:
                     # pylab.plot(hist,color = col) #256 可以直接显示
                     pylab.plot(range(int(step / 2), 256, step), hist_trans, color=col)
                 hists.append(hist_trans)
-        hist = cv2.calcHist([self.gray().org()], [0], None, histSize, [0, 256])
+        hist = cv2.calcHist([self.gray().org()], [0], None, hist_size, [0, 256])
         hist_trans = hist.transpose().ravel()
         hists.append(hist_trans)
         if show:
@@ -252,7 +252,7 @@ class _ImageBase(Media):
         diff_ = cv2.absdiff(self.gray().org(), another.gray().org())
         return self.__class__(diff_, imshow_params={'cmap': 'Greys_r'})
 
-    def distanceHist(self, another, method=sci_dist.euclidean, histSize=[256], gray=False,
+    def distanceHist(self, another, method=sci_dist.euclidean, hist_size=[256], gray=False,
                      show=True):
         assert isinstance(method, types.FunctionType), 'method should be a function!'
         if isinstance(another, np.ndarray):
@@ -261,8 +261,8 @@ class _ImageBase(Media):
             assert self.org().shape == another.org().shape, 'The shapes should be the same!'
         else:
             assert False, f'Another should be a numpy.ndarray or {type(self)}'
-        hist_self = self.hist(show, histSize=histSize)
-        hist_another = another.hist(show, histSize=histSize)
+        hist_self = self.hist(show, hist_size=hist_size)
+        hist_another = another.hist(show, hist_size=hist_size)
         if gray:
             d = method(hist_self[-1].transpose(), hist_another[-1].transpose())
         else:
@@ -277,8 +277,8 @@ class _ImageBase(Media):
         return d, full_size, ratio
 
     def distanceLine(self, another, method=sci_dist.euclidean):
-        iInfo = self.getInfo()
-        w, h = iInfo['width'], iInfo['height']
+        self_info = self.getInfo()
+        w, h = self_info['width'], self_info['height']
 
     def normRectToXywhRect(self, norm_rect, dilate_ratio=1):
         img_info = self.getInfo()

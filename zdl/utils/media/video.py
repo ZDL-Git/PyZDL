@@ -63,11 +63,11 @@ class Video(Media):
     def clear(self):
         self.frame_dict = {}
 
-    def readFrame(self, index, ImageCV_=False):
+    def readFrame(self, index: int, need_type: Union[ImageCV, np.ndarray] = ImageCV):
         cap = cv2.VideoCapture(self.fname)
         cap.set(cv2.CAP_PROP_POS_FRAMES, index)
         _, f = cap.read()
-        if ImageCV_:
+        if need_type == ImageCV:
             return ImageCV(f, title=index)
         else:
             return f
