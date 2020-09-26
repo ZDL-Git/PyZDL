@@ -56,7 +56,7 @@ class OpenposeInstaller(Installer):
 
             # build openpose
             cmake_c = cls.CMAKE_DEBUG_CMD if mode == 'GPU' else cls.CMAKE_CPU_DEBUG_CMD
-            compile_c = f'cd {cls.OPENPOSE_PATH} && rm - rf build || true && mkdir build && cd build && {cmake_c} && make - j `nproc` && make install'
+            compile_c = f'cd {cls.OPENPOSE_PATH} && rm - rf build || true && mkdir build && cd build && {cmake_c} && make - j `nproc` && make install -j`nproc`'
             cls.checkCall(compile_c)
         else:
             logger.warning(f'[{cls.OPENPOSE_PATH}] already exists!')
@@ -106,7 +106,7 @@ class OpenposeInstaller(Installer):
         command += f'&& {cmake_c} && make -j`nproc`'
 
         if install:
-            command += f'&& make install'
+            command += f'&& make install -j`nproc`'
         if tar:
             command += f'&& tar -czf /content/{tar_file_name} {os.path.join(build_path, "..")}'
         cls.checkCall(command)
@@ -134,7 +134,7 @@ class OpenposeInstaller(Installer):
         cls.checkCall(decompression)
 
         logger.info('deploy openpose...')
-        make_install = f'cd {cls.OPENPOSE_GREEN_PATH}/build/ && make install'
+        make_install = f'cd {cls.OPENPOSE_GREEN_PATH}/build/ && make install -j`nproc`'
         cls.checkCall(make_install)
 
     @classmethod
