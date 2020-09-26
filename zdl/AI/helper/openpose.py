@@ -100,14 +100,14 @@ class DatumPickleable:
         ImageCV(self.cvOutputData, self.title).show()
 
     @classmethod
-    def rebuildFromRoiDatum(cls, img, roi_datum_tuple_list, model_type):
+    def rebuildFromRoiDatum(cls, img, roi_datum_tuple_list, model_type: Type[Pose]):
         datum_rebuild = namedtuple('datum_rebuild', ['poseKeypoints', 'cvInputData', 'cvOutputData'])
         datum_rebuild.cvInputData = img
         img_fill = np.copy(img)
         datums_pk = []
         for roi_rect, datum in roi_datum_tuple_list:
             if datum.poseKeypoints.shape == ():
-                add_one_zero_pose = np.zeros((1, 25, 4), dtype=np.float32)
+                add_one_zero_pose = np.expand_dims(model_type.newZeroPose().key_points, axis=0)
                 datums_pk.append(add_one_zero_pose)
                 continue
 
