@@ -65,17 +65,17 @@ class OpenposeInstaller(Installer):
     def _getModeEnv(cls, mode, debug=True):
         if mode == 'GPU':
             _, gpu_info = subprocess.getstatusoutput('nvidia-smi --query-gpu=gpu_name --format=csv')
+            logger.info(f'GPU info: {gpu_info}')
             if gpu_info.find('failed') >= 0:
                 raise Exception('No GPU found!!!')
             elif 'P100' in gpu_info or 'P4' in gpu_info:
-                logger.debug('P100')
                 source_file = cls.GPU_PACKAGE
             elif 'K80' in gpu_info or 'T4' in gpu_info:
-                logger.debug('K80')
                 source_file = cls.GPU_PACKAGE_K80
             else:
-                assert False, 'GPU card not compile!'
+                raise Exception('The GPU card is not compiled!')
 
+            logger.debug(f'{source_file} file selected.')
             cmake_c = cls.CMAKE_DEBUG_CMD if debug else cls.CMAKE_CMD
         else:
             source_file = cls.CPU_PACKAGE
