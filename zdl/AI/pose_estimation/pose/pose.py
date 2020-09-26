@@ -39,9 +39,9 @@ class Pose(ABC):
     @classmethod
     def addInheritFlagCol(cls, pose_keypoints):
         shape = pose_keypoints.shape
-        if shape == () or shape and shape[-1] == 4: return pose_keypoints
+        if shape == () or shape and shape[-1] == cls.SHAPE[-1] + 1: return pose_keypoints
         append_shape = *shape[:-1], 1
-        result = np.concatenate((pose_keypoints, np.zeros(append_shape, dtype=pose_keypoints.dtype)), axis=2)
+        result = np.concatenate((pose_keypoints, np.zeros(append_shape, dtype=pose_keypoints.dtype)), axis=1)
         return result
 
     # TODO: switch to abstract
