@@ -51,8 +51,8 @@ def sysShow(imagepath_or_obj):
         cv2.imwrite(image_path, imagepath_or_obj)
     logger.debug(image_path)
     image_viewer_command = {'linux': 'xdg-open',
-                          'win32': 'explorer',
-                          'darwin': 'open'}[sys.platform]
+                            'win32': 'explorer',
+                            'darwin': 'open'}[sys.platform]
     subprocess.run([image_viewer_command, image_path])
 
 
@@ -125,6 +125,8 @@ class _ImageBase(Media):
             return self
         logger.info('===============showing image============')
         self.info()
+        info = self.getInfo()
+        assert info['width'] and info['height'], 'img shape error!'
         params = dict(self.imshow_params, **params)
         logger.info(params)
         logger.info(f'{title or self.title}:')
