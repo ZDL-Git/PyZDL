@@ -9,9 +9,10 @@ from zdl.utils.media.point import Point
 
 
 class Pose(ABC):
-    def __init__(self, key_points: np.ndarray):
+    def __init__(self, key_points: np.ndarray, add_inherit_flag_col: bool = True):
         assert key_points.ndim == 2, f'Should be a 2D pose! shape: {key_points.shape}'
-        self.key_points = key_points
+        self.key_points = self.addInheritFlagCol(key_points) \
+            if add_inherit_flag_col else key_points
         self._center = None
 
     @property
@@ -34,6 +35,14 @@ class Pose(ABC):
     @abstractmethod
     def sections(self):
         pass
+
+    @classmethod
+    def addInheritFlagCol(cls, pose_keypoints):
+        shape = pose_keypoints.shape
+        if shape == () or shape and shape[-1] == 4: return pose_keypoints
+        append_shape = *shape[:-1], 1
+        result = np.concatenate((pose_keypoints, np.zeros(append_shape, dtype=pose_keypoints.dtype)), axis=2)
+        return result
 
     # TODO: switch to abstract
     # @abstractmethod

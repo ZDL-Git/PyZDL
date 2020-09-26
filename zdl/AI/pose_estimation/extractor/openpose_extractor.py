@@ -45,4 +45,4 @@ class OpenposeExtractor(Extractor):
         self.datum.cvInputData = img
         self.opWrapper.emplaceAndPop([self.datum])
         logger.debug(self.datum.poseKeypoints)
-        return Poses(self.datum.poseKeypoints, self.pose_type), DatumPickleable(self.datum, self.pose_type, True)
+        return Poses(self.datum.poseKeypoints, self.pose_type), DatumPickleable(self.datum, self.pose_type)

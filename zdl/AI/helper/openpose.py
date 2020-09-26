@@ -12,9 +12,8 @@ from zdl.AI.pose_estimation.pose.pose import Poses, Pose
 
 
 class DatumPickleable:
-    def __init__(self, datum, model_type: Type[Pose], add_inherit_flag_col: bool = False, title=''):
-        self.poseKeypoints = self.addInheritFlagCol(datum.poseKeypoints) \
-            if add_inherit_flag_col else datum.poseKeypoints
+    def __init__(self, datum, model_type: Type[Pose], title=''):
+        self.poseKeypoints = datum.poseKeypoints
         self.cvInputData = datum.cvInputData
         self.cvOutputData = datum.cvOutputData
         self.model_type = model_type
@@ -39,14 +38,6 @@ class DatumPickleable:
         logger.debug(self.poseKeypoints)
         ImageCV(self.cvInputData, 'cvInputData').show()
         ImageCV(self.cvOutputData, 'cvOutputData').show()
-
-    @classmethod
-    def addInheritFlagCol(cls, poseKeypoints):
-        shape = poseKeypoints.shape
-        if shape == () or shape and shape[-1] == 4: return poseKeypoints
-        append_shape = *shape[:-1], 1
-        result = np.concatenate((poseKeypoints, np.zeros(append_shape, dtype=poseKeypoints.dtype)), axis=2)
-        return result
 
     def putText(self, text, point=(50, 50), font_scale=None, thickness=None, img=None):
         text = str(text)
@@ -109,7 +100,7 @@ class DatumPickleable:
         ImageCV(self.cvOutputData, self.title).show()
 
     @classmethod
-    def rebuildFromRoiDatum(cls, img, roi_datum_tuple_list, model_type, add_inherit_flag_col: bool = False):
+    def rebuildFromRoiDatum(cls, img, roi_datum_tuple_list, model_type):
         datum_rebuild = namedtuple('datum_rebuild', ['poseKeypoints', 'cvInputData', 'cvOutputData'])
         datum_rebuild.cvInputData = img
         img_fill = np.copy(img)
@@ -130,4 +121,4 @@ class DatumPickleable:
 
         datum_rebuild.poseKeypoints = np.vstack(datums_pk) if datums_pk else np.array(0.0)
         datum_rebuild.cvOutputData = img_fill
-        return cls(datum_rebuild, model_type, add_inherit_flag_col)
+        return cls(datum_rebuild, model_type)
