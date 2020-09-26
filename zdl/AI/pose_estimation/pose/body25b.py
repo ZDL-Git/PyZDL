@@ -1,6 +1,7 @@
-from zdl.utils.env.gpu import GPU
+import numpy as np
 
 from zdl.AI.pose_estimation.pose.pose import Pose
+from zdl.utils.env.gpu import GPU
 
 
 class BODY25B(Pose):
@@ -20,9 +21,9 @@ class BODY25B(Pose):
         'knee_and_below': [13, 14, 15, 16, 19, 20, 21, 22, 23, 24],
     }
 
-    def __init__(self, key_points):
+    def __init__(self, key_points: np.ndarray, add_inherit_flag_col: bool = True):
         assert GPU.supported(), 'BODY_25B only supports GPU mode!'
-        super(BODY25B, self).__init__(key_points)
+        super(BODY25B, self).__init__(key_points, add_inherit_flag_col)
 
     @property
     def sections(self):

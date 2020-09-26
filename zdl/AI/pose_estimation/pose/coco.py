@@ -1,3 +1,5 @@
+import numpy as np
+
 from zdl.AI.pose_estimation.pose.pose import Pose
 
 
@@ -18,8 +20,8 @@ class COCO(Pose):
         'knee_and_below': [9, 12, 10, 13],
     }
 
-    def __init__(self, key_points):
-        super(COCO, self).__init__(key_points)
+    def __init__(self, key_points: np.ndarray, add_inherit_flag_col: bool = True):
+        super(COCO, self).__init__(key_points, add_inherit_flag_col)
 
     @property
     def sections(self):

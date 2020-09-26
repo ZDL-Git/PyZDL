@@ -1,3 +1,5 @@
+import numpy as np
+
 from zdl.AI.pose_estimation.pose.pose import Pose
 
 
@@ -18,8 +20,8 @@ class BODY25(Pose):
         'knee_and_below': [10, 11, 13, 14, 19, 20, 21, 22, 23, 24],
     }
 
-    def __init__(self, key_points):
-        super(BODY25, self).__init__(key_points)
+    def __init__(self, key_points: np.ndarray, add_inherit_flag_col: bool = True):
+        super(BODY25, self).__init__(key_points, add_inherit_flag_col)
 
     @property
     def sections(self):
