@@ -72,8 +72,9 @@ class Pose(ABC):
         return not np.any(self.key_points != 0)
 
     @classmethod
-    def newZeroPose(cls):
-        return cls(key_points=np.zeros((25, 4), dtype=np.float32))
+    def newZeroPose(cls, add_inherit_flag_col: bool = True):
+        # the sub class's SHAPE is not property, but class attribute. So blow warning can be ignored.
+        return cls(np.zeros(cls.SHAPE, dtype=np.float32), add_inherit_flag_col)
 
     def cleanup(self, body_parts: list, copy=False):
         if ndarrayLen(self.key_points) == 0: return self
