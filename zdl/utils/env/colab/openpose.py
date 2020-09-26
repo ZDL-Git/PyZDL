@@ -182,5 +182,7 @@ class OpenposeInstaller(Installer):
 
     @classmethod
     def downloadCocoModel(cls, dst_path):
-        down = f'wget {cls.COCO_MODEL_URL} -P {dst_path}'
+        logger.info('downloading coco model...')
+        down = f'wget -N {cls.COCO_MODEL_URL} -P {dst_path}'
         cls.checkCall(down)
+        logger.info('finished.')
