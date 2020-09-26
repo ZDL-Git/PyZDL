@@ -5,6 +5,7 @@ from zdl.AI.pose_estimation.pose.pose import Pose
 
 class BODY25B(Pose):
     NAME = 'BODY_25B'
+    SHAPE = (25, 3)
     PARTS_INDICES = {
         'face': [0, 1, 2, 3, 4],
         'shoulder': [6, 5],

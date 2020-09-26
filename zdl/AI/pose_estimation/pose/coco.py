@@ -3,6 +3,7 @@ from zdl.AI.pose_estimation.pose.pose import Pose
 
 class COCO(Pose):
     NAME = 'COCO'
+    SHAPE = (18, 3)
     PARTS_INDICES = {
         'face': [0, 14, 15, 16, 17],
         'shoulder': [2, 5],

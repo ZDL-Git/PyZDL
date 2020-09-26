@@ -21,6 +21,11 @@ class Pose(ABC):
 
     @property
     @abstractmethod
+    def SHAPE(self):
+        pass
+
+    @property
+    @abstractmethod
     def PARTS_INDICES(self):
         # right to left, up to down
         pass
