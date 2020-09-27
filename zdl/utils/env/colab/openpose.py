@@ -70,8 +70,10 @@ class OpenposeInstaller(Installer):
                 raise Exception('No GPU found!!!')
             elif 'P100' in gpu_info or 'P4' in gpu_info:
                 source_file = cls.GPU_PACKAGE
-            elif 'K80' in gpu_info or 'T4' in gpu_info:
+            elif 'K80' in gpu_info:
                 source_file = cls.GPU_PACKAGE_K80
+            elif 'T4' in gpu_info:
+                raise Exception('The T4 card not supported!')
             else:
                 raise Exception('The GPU card is not compiled!')
 
