@@ -7,7 +7,7 @@ class COCO(Pose):
     NAME = 'COCO'
     SHAPE = (18, 3)
     PARTS_INDICES = {
-        'face': [0, 14, 15, 16, 17],
+        'face': [14, 15, 16, 17],  # exclude 0
         'shoulder': [2, 5],
         'arm_right': [2, 3, 4],
         'arm_left': [5, 6, 7],
