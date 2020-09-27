@@ -1,11 +1,14 @@
 import logging
 import os
+from enum import Enum
+
 import sys
 
 import colorlog
 
 # usage:
-#   1. from zdl.utils.io.log import logger
+#   1. use default logger:
+#       from zdl.utils.io.log import logger
 #   2. change all logger in project, as default logger = orgLogger, it is non-color:
 #       from zdl.utils.io import log;log.theme('dark');from zdl.utils.io.log import logger
 #       !!should be placed in front of other imports which imported log module.
@@ -49,6 +52,14 @@ _LIGHT_SECONDARY_LOG_COLORS = {
         'CRITICAL': 'black',
     }
 }
+
+
+class Level(Enum):
+    DEBUG = logging.DEBUG
+    INFO = logging.INFO
+    WARNING = WARN = logging.WARNING
+    ERROR = logging.ERROR
+    CRITICAL = FATAL = logging.CRITICAL
 
 
 def theme(theme_='dark'):
