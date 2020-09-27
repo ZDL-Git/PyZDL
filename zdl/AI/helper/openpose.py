@@ -107,7 +107,7 @@ class DatumPickleable:
         datums_pk = []
         for roi_rect, datum in roi_datum_tuple_list:
             if datum.poseKeypoints.shape == ():
-                add_one_zero_pose = np.expand_dims(model_type.newZeroPose().key_points, axis=0)
+                add_one_zero_pose = np.expand_dims(model_type.newZeroPose(False).key_points, axis=0)
                 datums_pk.append(add_one_zero_pose)
                 continue
 
