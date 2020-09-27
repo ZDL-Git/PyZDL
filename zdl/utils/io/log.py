@@ -1,6 +1,6 @@
 import logging
 import os
-from enum import Enum
+from enum import IntEnum
 
 import sys
 
@@ -54,7 +54,7 @@ _LIGHT_SECONDARY_LOG_COLORS = {
 }
 
 
-class Level(Enum):
+class Level(IntEnum):
     DEBUG = logging.DEBUG
     INFO = logging.INFO
     WARNING = WARN = logging.WARNING
