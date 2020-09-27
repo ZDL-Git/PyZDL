@@ -33,7 +33,7 @@ class Pose(ABC):
 
     @property
     @abstractmethod
-    def sections(self):
+    def SECTIONS(self):
         pass
 
     @classmethod
