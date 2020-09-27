@@ -118,7 +118,7 @@ class DatumPickleable:
             pks_incr[..., 1] = roi_rect.r_t
             pks_incr[datum.poseKeypoints == 0] = 0
             datums_pk.append(datum.poseKeypoints + pks_incr)
-
+        logger.debug([d.shape for d in datums_pk])
         datum_rebuild.poseKeypoints = np.vstack(datums_pk) if datums_pk else np.array(0.0)
         datum_rebuild.cvOutputData = img_fill
         return cls(datum_rebuild, model_type)
