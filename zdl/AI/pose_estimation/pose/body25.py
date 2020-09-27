@@ -1,9 +1,9 @@
 import numpy as np
 
-from zdl.AI.pose_estimation.pose.pose import Pose
+from zdl.AI.pose_estimation.pose.base_pose import BasePose
 
 
-class BODY25(Pose):
+class BODY25(BasePose):
     NAME = 'BODY_25'
     SHAPE = (25, 3)
     PARTS_INDICES = {

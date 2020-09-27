@@ -1,9 +1,9 @@
 import numpy as np
 
-from zdl.AI.pose_estimation.pose.pose import Pose
+from zdl.AI.pose_estimation.pose.base_pose import BasePose
 
 
-class COCO(Pose):
+class COCO(BasePose):
     NAME = 'COCO'
     SHAPE = (18, 3)
     PARTS_INDICES = {

@@ -8,11 +8,11 @@ from zdl.utils.io.log import logger
 from zdl.utils.media.image import ImageCV
 from zdl.utils.media.point import Point
 
-from zdl.AI.pose_estimation.pose.pose import Poses, Pose
+from zdl.AI.pose_estimation.pose.base_pose import Poses, BasePose
 
 
 class DatumPickleable:
-    def __init__(self, datum, model_type: Type[Pose], title=''):
+    def __init__(self, datum, model_type: Type[BasePose], title=''):
         self.poseKeypoints = datum.poseKeypoints
         self.cvInputData = datum.cvInputData
         self.cvOutputData = datum.cvOutputData
@@ -100,7 +100,7 @@ class DatumPickleable:
         ImageCV(self.cvOutputData, self.title).show()
 
     @classmethod
-    def rebuildFromRoiDatum(cls, img, roi_datum_tuple_list, model_type: Type[Pose]):
+    def rebuildFromRoiDatum(cls, img, roi_datum_tuple_list, model_type: Type[BasePose]):
         datum_rebuild = namedtuple('datum_rebuild', ['poseKeypoints', 'cvInputData', 'cvOutputData'])
         datum_rebuild.cvInputData = img
         img_fill = np.copy(img)

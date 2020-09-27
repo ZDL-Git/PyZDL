@@ -8,7 +8,7 @@ from zdl.utils.io.log import logger
 from zdl.utils.media.point import Point
 
 
-class Pose(ABC):
+class BasePose(ABC):
     def __init__(self, key_points: np.ndarray, add_inherit_flag_col: bool = True):
         assert key_points.ndim == 2, f'Should be a 2D pose! shape: {key_points.shape}'
         self.key_points = self.addInheritFlagCol(key_points) \
@@ -103,7 +103,7 @@ class Pose(ABC):
             raise Exception
         return func(pose1, pose2)
 
-    def distanceTo(self, another: 'Pose', algorithm='Manhattan'):
+    def distanceTo(self, another: 'BasePose', algorithm='Manhattan'):
         if algorithm == 'Manhattan':
             func = self.manhattanDistance
         elif algorithm == 'Euclidean':
@@ -155,7 +155,7 @@ class Pose(ABC):
 
 
 class Poses:
-    def __init__(self, all_keypoints, pose_type: Type[Pose]):
+    def __init__(self, all_keypoints, pose_type: Type[BasePose]):
         """
 
         :param all_keypoints:

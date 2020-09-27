@@ -1,10 +1,10 @@
 import numpy as np
 
-from zdl.AI.pose_estimation.pose.pose import Pose
+from zdl.AI.pose_estimation.pose.base_pose import BasePose
 from zdl.utils.env.gpu import GPU
 
 
-class BODY25B(Pose):
+class BODY25B(BasePose):
     NAME = 'BODY_25B'
     SHAPE = (25, 3)
     PARTS_INDICES = {

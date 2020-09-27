@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 from zdl.AI.helper.openpose import DatumPickleable
-from zdl.AI.pose_estimation.pose.pose import Pose, Poses
+from zdl.AI.pose_estimation.pose.base_pose import BasePose, Poses
 from zdl.utils.io.log import logger
 
 
@@ -15,7 +15,7 @@ class Extractor(ABC):
     def __init__(self):
         self.pre_hooks = []
         self.post_hooks = []
-        self.pose_type: Type[Pose] = None
+        self.pose_type: Type[BasePose] = None
 
     @abstractmethod
     def _callExtractorCore(self, img):

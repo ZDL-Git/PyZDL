@@ -3,7 +3,7 @@ import sys
 from zdl.AI.helper.openpose import DatumPickleable
 from zdl.AI.pose_estimation.extractor.extractor import Extractor
 from zdl.AI.pose_estimation.pose.body25b import BODY25B
-from zdl.AI.pose_estimation.pose.pose import Poses
+from zdl.AI.pose_estimation.pose.base_pose import Poses
 from zdl.utils.io.log import logger
 
 sys.path.append('/usr/local/python')
