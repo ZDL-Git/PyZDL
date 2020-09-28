@@ -18,6 +18,7 @@ class OpenposeInstaller(Installer):
     OPENPOSE_GREEN_RPATH = 'openpose-green'
     GPU_PACKAGE = 'openpose-Ubuntu_18_04-Tesla_P100.tar.gz'
     GPU_PACKAGE_K80 = 'openpose-Ubuntu_18_04-Tesla_K80.tar.gz'
+    GPU_PACKAGE_T4 = 'openpose-Ubuntu_18_04-Tesla_T4.tar.gz'
     CPU_PACKAGE = 'openpose-Ubuntu_18_04-CPU.tar.gz'
 
     DRIVE_PACKAGE_PATH = '/content/DriveNotebooks/package/'
@@ -73,7 +74,7 @@ class OpenposeInstaller(Installer):
             elif 'K80' in gpu_info:
                 source_file = cls.GPU_PACKAGE_K80
             elif 'T4' in gpu_info:
-                raise Exception('The T4 card not supported!')
+                source_file = cls.GPU_PACKAGE_T4
             else:
                 raise Exception('The GPU card is not compiled!')
 
