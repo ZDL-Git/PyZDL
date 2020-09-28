@@ -6,7 +6,8 @@ class GPU(Terminal):
     @classmethod
     def supported(cls):
         try:
-            if int(cls.checkOutput('nvidia-smi --query-gpu=name --format=csv,noheader | wc -l')) > 0:
+            if int(cls.checkOutput('nvidia-smi > /dev/null '
+                                   '&& nvidia-smi --query-gpu=name --format=csv,noheader | wc -l')) > 0:
                 return True
             return False
         except Exception:
