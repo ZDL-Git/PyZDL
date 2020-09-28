@@ -3,7 +3,6 @@ import subprocess
 from os.path import exists
 
 import cv2
-
 from zdl.utils.env.installer import Installer
 from zdl.utils.io.log import logger
 
@@ -74,6 +73,8 @@ class OpenposeInstaller(Installer):
             elif 'K80' in gpu_info:
                 source_file = cls.GPU_PACKAGE_K80
             elif 'T4' in gpu_info:
+                # T4 version modified openpose/cmake/Cuda.cmake file, removed ${TURING}.
+                # refer to: https://github.com/CMU-Perceptual-Computing-Lab/openpose/issues/1232
                 source_file = cls.GPU_PACKAGE_T4
             else:
                 raise Exception('The GPU card is not compiled!')
