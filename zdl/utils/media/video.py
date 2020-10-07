@@ -122,7 +122,7 @@ class Video(Media):
         def compare(pre, cur):
             pre_obj = ImageCV(pre[1], pre[0])
             cur_obj = ImageCV(cur[1], cur[0])
-            distance = pre_obj.distanceHist(cur_obj, method=sci_dist.euclidean, gray=False, show=False, log=False)[-1]
+            distance = pre_obj.distanceHist(cur_obj, method=sci_dist.euclidean, gray=False, show=False)[-1]
             distances.append([pre[0], cur[0], distance])
             if distance >= threshold:
                 sections[-1][-1] = pre[0]
