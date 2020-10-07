@@ -9,7 +9,6 @@ import pylab
 from scipy.spatial import distance as sci_dist
 # noinspection PyUnresolvedReferences
 from tqdm import tqdm
-
 from zdl.utils.io.log import logger
 from zdl.utils.media.image import ImageCV
 from zdl.utils.media.media import Media, VIDEO_SUFFIXES, FIGSIZE
@@ -38,7 +37,7 @@ class Video(Media):
             fps = cap.get(cv2.CAP_PROP_FPS)
             frame_count = self._countFrames(cap=cap)
             # frame_has_read_count = len(self.frame_dict)
-            duration = frame_count / fps
+            duration = frame_count / fps if fps else None
             # width  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))  # float
             # height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) # float
             self._info = {'fname': self.fname,
