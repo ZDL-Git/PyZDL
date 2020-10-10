@@ -1,8 +1,7 @@
 import logging
 import os
-from enum import IntEnum
-
 import sys
+from enum import IntEnum, Enum
 
 import colorlog
 
@@ -10,7 +9,7 @@ import colorlog
 #   1. use default logger:
 #       from zdl.utils.io.log import logger
 #   2. change all logger in project, as default logger = orgLogger, it is non-color:
-#       from zdl.utils.io import log;log.theme('dark');from zdl.utils.io.log import logger
+#       from zdl.utils.io import log;log.theme(log.Theme.DARK);from zdl.utils.io.log import logger
 #       !!should be placed in front of other imports which imported log module.
 #   3. change single file logger mode:
 #       from zdl.io.log import darkThemeColorLogger as logger
@@ -53,6 +52,39 @@ _LIGHT_SECONDARY_LOG_COLORS = {
     }
 }
 
+logging.root.setLevel(logging.DEBUG)
+
+_consoleHandler = logging.StreamHandler()
+_consoleHandler.setFormatter(logging.Formatter(_CONSOLE_FORMAT, _DATEFMT_SHORT))
+_consoleHandler.setLevel(logging.DEBUG)
+
+orgLogger = logging.getLogger('main')
+# logger.setLevel(logging.DEBUG)
+orgLogger.addHandler(_consoleHandler)
+orgLogger.propagate = False
+
+_darkColorConsoleHandler = colorlog.StreamHandler()
+_darkColorConsoleHandler.setFormatter(
+    colorlog.ColoredFormatter(_COLOR_CONSOLE_FORMAT, _DATEFMT_SHORT,
+                              log_colors=_DARK_THEME_COLORS,
+                              secondary_log_colors=_DARK_SECONDARY_LOG_COLORS))
+
+darkThemeColorLogger = colorlog.getLogger('color.dark')
+darkThemeColorLogger.addHandler(_darkColorConsoleHandler)
+darkThemeColorLogger.propagate = False
+
+_lightColorConsoleHandler = colorlog.StreamHandler()
+_lightColorConsoleHandler.setFormatter(
+    colorlog.ColoredFormatter(_COLOR_CONSOLE_FORMAT, _DATEFMT_SHORT,
+                              log_colors=_LIGHT_THEME_COLORS,
+                              secondary_log_colors=_LIGHT_SECONDARY_LOG_COLORS))
+
+lightThemeColorLogger = colorlog.getLogger('color.light')
+lightThemeColorLogger.addHandler(_lightColorConsoleHandler)
+lightThemeColorLogger.propagate = False
+
+logger = orgLogger
+
 
 class Level(IntEnum):
     DEBUG = logging.DEBUG
@@ -62,20 +94,23 @@ class Level(IntEnum):
     CRITICAL = FATAL = logging.CRITICAL
 
 
-def theme(theme_='dark'):
+class Theme(Enum):
+    ORIGINAL = orgLogger
+    DARK = darkThemeColorLogger
+    LIGHT = lightThemeColorLogger
+
+
+def theme(theme_: Theme = Theme.ORIGINAL):
     global logger
     ref_count = sys.getrefcount(logger)
     logger.info(f'logger ref count: {ref_count}')
-    if ref_count > 4:
+    if ref_count > 6:
         logger.warning('You can only change loggers in other modules, before they are imported!')
-    if theme_ == 'dark':
-        logger = darkThemeColorLogger
-    elif theme_ == 'light':
-        logger = lightThemeColorLogger
-    elif theme_ == 'original':
-        logger = orgLogger
+
+    if theme_ in Theme:
+        logger = theme_.value
     else:
-        logger.error('theme should be in ["dark", "light", "original"]!')
+        logger.error('change log theme failed, theme_ param should be a member of the enum Theme!')
 
 
 def configConsoleLogger(level):
@@ -116,37 +151,3 @@ def _test():
     logger.warning('')
     logger.error('')
     logger.critical('')
-
-
-logging.root.setLevel(logging.DEBUG)
-
-_consoleHandler = logging.StreamHandler()
-_consoleHandler.setFormatter(logging.Formatter(_CONSOLE_FORMAT, _DATEFMT_SHORT))
-_consoleHandler.setLevel(logging.DEBUG)
-
-orgLogger = logging.getLogger('main')
-# logger.setLevel(logging.DEBUG)
-orgLogger.addHandler(_consoleHandler)
-orgLogger.propagate = False
-
-_darkColorConsoleHandler = colorlog.StreamHandler()
-_darkColorConsoleHandler.setFormatter(
-    colorlog.ColoredFormatter(_COLOR_CONSOLE_FORMAT, _DATEFMT_SHORT,
-                              log_colors=_DARK_THEME_COLORS,
-                              secondary_log_colors=_DARK_SECONDARY_LOG_COLORS))
-
-darkThemeColorLogger = colorlog.getLogger('color.dark')
-darkThemeColorLogger.addHandler(_darkColorConsoleHandler)
-darkThemeColorLogger.propagate = False
-
-_lightColorConsoleHandler = colorlog.StreamHandler()
-_lightColorConsoleHandler.setFormatter(
-    colorlog.ColoredFormatter(_COLOR_CONSOLE_FORMAT, _DATEFMT_SHORT,
-                              log_colors=_LIGHT_THEME_COLORS,
-                              secondary_log_colors=_LIGHT_SECONDARY_LOG_COLORS))
-
-lightThemeColorLogger = colorlog.getLogger('color.light')
-lightThemeColorLogger.addHandler(_lightColorConsoleHandler)
-lightThemeColorLogger.propagate = False
-
-logger = orgLogger
