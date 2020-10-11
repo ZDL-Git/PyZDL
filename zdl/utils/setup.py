@@ -16,6 +16,7 @@ PACKAGES = find_namespace_packages(where='../../', include=['zdl.utils.*'])
 PACKAGE_DATA = {}
 REQUIRED_PACKAGES = [
     'colorlog',
+    'numpy',
     'tqdm',
 ]
 VERSION = get_version('__init__.py')
