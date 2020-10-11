@@ -1,10 +1,14 @@
-import numpy as np
+from typing import Optional, List, Tuple, Union
 
+import numpy as np
 from zdl.utils.media.point import Point
 
 
 class Rect:
-    def __init__(self, xyxy=None, yxyx=None, xywh=None):
+    arg_types = Union[Tuple, List, np.ndarray]
+
+    def __init__(self, xyxy: Optional[arg_types] = None, yxyx: Optional[arg_types] = None,
+                 xywh: Optional[arg_types] = None):
         if xyxy is not None:
             self.xyxy = np.asarray(xyxy)
             self.yxyx = self.xyxy[[1, 0, 3, 2]]
@@ -27,8 +31,8 @@ class Rect:
     def toInt(self) -> 'Rect':
         return self.__class__(xyxy=self.xyxy.astype(int))
 
-    def diagonal(self):
+    def diagonal(self) -> float:
         return (self.w ** 2 + self.h ** 2) ** 0.5
 
-    def center(self):
+    def center(self) -> Point:
         return Point(self.xyxy[0] + self.w / 2, self.xyxy[1] + self.h / 2)
