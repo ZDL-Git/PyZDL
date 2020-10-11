@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from scipy.spatial import distance as sci_dist
-
 from zdl.utils.io.log import logger
 from zdl.utils.media.media import Media, FIGSIZE, IMG_SUFFIXES
 from zdl.utils.media.rect import Rect
@@ -438,10 +437,17 @@ class ImageCV(_ImageBase):
             xywh = tuple(bbox.toInt().xywh)
             color = tuple(np.random.choice(range(40, 256), size=3))
             color_int = tuple(map(int, color))[::-1]
-            str_width = len(label) * 12
+            label_w = len(label) * 12
+            label_h = 25
             thickness = 3
             cv2.rectangle(img, rec=xywh, color=color_int, thickness=thickness)
-            cv2.rectangle(img, rec=(xywh[0] - thickness, max(0, xywh[1] - 27), str_width, 30),
+            cv2.rectangle(img,
+                          rec=(
+                              xywh[0] - thickness // 2 - 1,
+                              max(0, xywh[1] - label_h),
+                              label_w,
+                              label_h,
+                          ),
                           color=color_int, thickness=-1)
             cv2.putText(img, label, org=(xywh[0], max(22, xywh[1] - 5)),
                         fontFace=cv2.FONT_HERSHEY_TRIPLEX,
