@@ -52,6 +52,14 @@ _LIGHT_SECONDARY_LOG_COLORS = {
     }
 }
 
+
+class MyFilter(logging.Filter):
+    def filter(self, record):
+        if hasattr(record, 'func_name'):
+            record.funcName = record.func_name
+        return True
+
+
 logging.root.setLevel(logging.DEBUG)
 
 _consoleHandler = logging.StreamHandler()
@@ -62,6 +70,7 @@ orgLogger = logging.getLogger('main')
 # logger.setLevel(logging.DEBUG)
 orgLogger.addHandler(_consoleHandler)
 orgLogger.propagate = False
+orgLogger.addFilter(MyFilter())
 
 _darkColorConsoleHandler = colorlog.StreamHandler()
 _darkColorConsoleHandler.setFormatter(
@@ -72,6 +81,7 @@ _darkColorConsoleHandler.setFormatter(
 darkThemeColorLogger = colorlog.getLogger('color.dark')
 darkThemeColorLogger.addHandler(_darkColorConsoleHandler)
 darkThemeColorLogger.propagate = False
+darkThemeColorLogger.addFilter(MyFilter())
 
 _lightColorConsoleHandler = colorlog.StreamHandler()
 _lightColorConsoleHandler.setFormatter(
@@ -82,6 +92,7 @@ _lightColorConsoleHandler.setFormatter(
 lightThemeColorLogger = colorlog.getLogger('color.light')
 lightThemeColorLogger.addHandler(_lightColorConsoleHandler)
 lightThemeColorLogger.propagate = False
+lightThemeColorLogger.addFilter(MyFilter())
 
 logger = orgLogger
 
