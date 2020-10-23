@@ -3,24 +3,24 @@ import functools
 
 class TableDecorators:
     @classmethod
-    def dissort(cls, table_lambda=lambda self: self, reset: bool = True):
+    def dissort(cls, table_lambda=lambda self: self, resume_sortable: bool = True):
         """
 
         :param table_lambda: lambda, input 'self', output table
-        :param reset: if True, after func executed, the sortingEnabled property will be reset to old state.
+        :param resume_sortable: if True, after func executed, the sortingEnabled property will be reset to True.
         :return:
         """
 
         def inner(func):
             @functools.wraps(func)
             def func_wrapper(*args, **kwargs):
-                # args[0] is 'self' arg
+                # args[0] is 'self'
                 table = table_lambda(args[0])
-                old_state = table.isSortingEnabled()
                 table.setSortingEnabled(False)
                 result = func(*args, **kwargs)
-                if reset:
-                    table.setSortingEnabled(old_state)
+                # In a multi-threaded environment, it can not be resume to old state.
+                if resume_sortable:
+                    table.setSortingEnabled(True)
                 return result
 
             return func_wrapper
