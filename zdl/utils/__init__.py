@@ -2,4 +2,4 @@
 # cause log configuring should be separately done before it's user be imported.
 
 __version__ = "1.0"
-__all__ = ['env', 'helper', 'io', 'media', 'time']
+__all__ = ['env', 'helper', 'io', 'media']

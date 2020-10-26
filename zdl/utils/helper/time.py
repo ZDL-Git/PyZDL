@@ -1,6 +1,11 @@
 import time
+from datetime import datetime
 
 from zdl.utils.io.log import logger
+
+
+def prettyYToMs():
+    return datetime.now().strftime('%Y%m%d-%H:%M:%S.%f')[:-3]
 
 
 def timeit(method):

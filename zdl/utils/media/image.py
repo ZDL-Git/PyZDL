@@ -14,10 +14,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab
 from scipy.spatial import distance as sci_dist
+
+from zdl.utils.helper.time import timeit
 from zdl.utils.io.log import logger
 from zdl.utils.media.media import Media, FIGSIZE, IMG_SUFFIXES
 from zdl.utils.media.rect import Rect
-from zdl.utils.time.counter import timeit
 
 
 # class ShowType(Enum):

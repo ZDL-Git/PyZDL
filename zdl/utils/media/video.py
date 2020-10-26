@@ -9,10 +9,11 @@ import pylab
 from scipy.spatial import distance as sci_dist
 # noinspection PyUnresolvedReferences
 from tqdm import tqdm
+
+from zdl.utils.helper.time import timeit
 from zdl.utils.io.log import logger
 from zdl.utils.media.image import ImageCV
 from zdl.utils.media.media import Media, VIDEO_SUFFIXES, FIGSIZE
-from zdl.utils.time.counter import timeit
 
 
 def colabMode():
