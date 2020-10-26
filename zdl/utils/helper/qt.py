@@ -28,7 +28,7 @@ class TableDecorators:
         return inner
 
     @classmethod
-    def block_signals(cls, func):
+    def blockSignals(cls, func):
         def func_wrapper(*args, **kwargs):
             table = args[0]
             table.blockSignals(True)
@@ -39,10 +39,10 @@ class TableDecorators:
         return func_wrapper
 
 
-def clear_layout(layout):
+def clearLayout(layout):
     while layout.count():
         child = layout.takeAt(0)
         if child.widget() is not None:
             child.widget().setParent(None)
         elif child.layout() is not None:
-            clear_layout(child.layout())
+            clearLayout(child.layout())

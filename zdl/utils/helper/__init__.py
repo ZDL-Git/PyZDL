@@ -1,1 +1,1 @@
-__all__ = ['numpy', 'time']
+__all__ = ['numpy', 'qt', 'time']
