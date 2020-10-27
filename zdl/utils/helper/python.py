@@ -1,20 +1,66 @@
 import functools
-from typing import Tuple, Union, Type
+from collections import UserDict
+from numbers import Number
+from typing import Tuple, Union, Type, Dict
 
 from zdl.utils.io.log import logger
 
 
-def except_as_None(exception: Union[Type[Exception], Tuple[Type[Exception]]] = Exception):
-    def inner(func):
-        @functools.wraps(func)
-        def wrap(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except exception as e:
-                logger.warning(f'{func.__name__}({args} {kwargs}) -> {e.__str__()}',
-                               extra={'func_name': 'except_as_None'})
-                return None
+class UnAssigned:
+    pass
 
-        return wrap
 
-    return inner
+class ZDict(dict):
+    """ Please don't use dot in ZDict key.
+    """
+
+    def __getitem__(self, item):
+        if isinstance(item, Tuple):
+            return [self.get(*t) if isinstance(t, Tuple) else self[t] for t in item]
+        elif isinstance(item, str):
+            if item.__contains__('.'):
+                res = UnAssigned
+                for t in item.split('.'):
+                    res = self[t] if res is UnAssigned else res[t]
+                return res
+            else:
+                return super().__getitem__(item)
+        elif isinstance(item, Number):
+            return super().__getitem__(item)
+
+    def search(self, item):
+        ...
+
+
+class DeepDataClass:
+    def __init__(self, mapping: Dict):
+        if not isinstance(mapping, self.KeptDict):
+            for key, value in mapping.items():
+                if isinstance(value, Dict):
+                    mapping[key] = self.__class__(value)
+        self.mapping = mapping
+
+    def __getattr__(self, item):
+        return self.mapping[item]
+
+    class KeptDict(UserDict):
+        """ A class that exists just to tell DeepDataClass not to covert this layer.
+        """
+
+
+class ZDecorators:
+    @classmethod
+    def exceptAsNone(cls, exception: Union[Type[Exception], Tuple[Type[Exception]]] = Exception):
+        def inner(func):
+            @functools.wraps(func)
+            def wrap(*args, **kwargs):
+                try:
+                    return func(*args, **kwargs)
+                except exception as e:
+                    logger.warning(f'{func.__name__}({args} {kwargs}) -> {e.__str__()}',
+                                   extra={'func_name': 'except_as_None'})
+                    return None
+
+            return wrap
+
+        return inner
