@@ -33,7 +33,7 @@ class ImgArray(np.ndarray):
         return obj
 
     def fill(self, v):
-        # override for chain call
+        # overwrite for chain call
         super().fill(v)
         return self
 
