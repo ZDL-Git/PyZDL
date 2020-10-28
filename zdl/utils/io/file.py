@@ -35,6 +35,10 @@ class AbcFile(FileInfo, metaclass=ABCMeta):
     def dump(self, path):
         pass
 
+    @abstractmethod
+    def load_hooks(self):
+        pass
+
     @classmethod
     @abstractmethod
     def load(cls, path):
@@ -96,6 +100,9 @@ class StandardFile(FileHelper, AbcFile):
         logger.debug(f'{self.uri} dump finished.')
         return True
 
+    def load_hooks(self):
+        pass
+
     @classmethod
     def load(cls, path):
         with open(path, 'r') as f:
@@ -103,6 +110,7 @@ class StandardFile(FileHelper, AbcFile):
         obj = cls()
         obj.setPath(path)
         obj.content = content
+        obj.load_hooks()
         logger.debug(f'{path} load finished.')
         return obj
 
@@ -132,7 +140,7 @@ class JsonFile(FileHelper, AbcFile):
         pass
 
     def dump(self, path: Optional[str] = None):
-        logger.debug('')
+        logger.debug(path)
         self.dump_hooks()
         if path:
             self.setPath(path)
@@ -143,11 +151,16 @@ class JsonFile(FileHelper, AbcFile):
             json.dump(self.content, f, indent=2, ensure_ascii=False)
         return True
 
+    def load_hooks(self):
+        pass
+
     @classmethod
     def load(cls, path):
+        logger.debug(path)
         with open(path, 'r', encoding='utf-8') as f:
             content = json.load(f)
         obj = cls()
         obj.setPath(path)
         obj.content = ZDict(content)
+        obj.load_hooks()
         return obj
