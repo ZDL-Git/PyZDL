@@ -11,8 +11,16 @@ class UnAssigned:
 
 
 class ZDict(dict):
-    """ Please don't use dot in ZDict key.
+    """ ZDict supports deep path and multi keys get.
+    Please don't use dot in ZDict str key.
     """
+
+    def __init__(self, seq=None, auto_insert=True, **kwargs):
+        if seq is None:
+            super().__init__(**kwargs)
+        else:
+            super().__init__(seq, **kwargs)
+        self._auto_insert = auto_insert
 
     def __getitem__(self, item):
         if isinstance(item, Tuple):
@@ -31,12 +39,26 @@ class ZDict(dict):
     def __setitem__(self, key, value):
         if isinstance(key, str):
             if key.__contains__('.'):
-                res = UnAssigned
+                walk = UnAssigned
                 paths = key.split('.')
-                for t in paths[:-1]:
-                    res = self[t] if res is UnAssigned else res[t]
-                res[paths[-1]] = value
+                for i, t in enumerate(paths[:-1]):
+                    pos = self if walk is UnAssigned else walk
+                    try:
+                        walk = pos[t]
+                    except KeyError:
+                        if self._auto_insert:
+                            pos[t] = walk = {}
+                        else:
+                            raise KeyError('.'.join(paths[:i + 1]))
+                    except Exception:
+                        if self._auto_insert:
+                            raise ValueError(f"can not insert {t} into {type(pos)} '{pos}'.")
+                        else:
+                            raise KeyError('.'.join(paths[:i + 1]))
+                walk[paths[-1]] = value
                 return
+        if not self._auto_insert and key not in self:
+            raise KeyError(key)
         super().__setitem__(key, value)
 
     def search(self, item):
