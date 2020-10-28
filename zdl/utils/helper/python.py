@@ -28,6 +28,17 @@ class ZDict(dict):
         elif isinstance(item, Number):
             return super().__getitem__(item)
 
+    def __setitem__(self, key, value):
+        if isinstance(key, str):
+            if key.__contains__('.'):
+                res = UnAssigned
+                paths = key.split('.')
+                for t in paths[:-1]:
+                    res = self[t] if res is UnAssigned else res[t]
+                res[paths[-1]] = value
+                return
+        super().__setitem__(key, value)
+
     def search(self, item):
         ...
 
