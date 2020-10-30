@@ -6,6 +6,10 @@ from typing import Tuple, Union, Type, Dict
 from zdl.utils.io.log import logger
 
 
+def raise_(ex: BaseException):
+    raise ex
+
+
 class UnAssigned:
     pass
 
