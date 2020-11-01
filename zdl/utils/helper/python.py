@@ -14,6 +14,18 @@ class UnAssigned:
     pass
 
 
+class BResult:
+    def __init__(self, status: bool, msg=None):
+        self.status = status
+        self.msg = msg
+
+    def __bool__(self):
+        return self.status
+
+    def __str__(self):
+        return self.msg
+
+
 class ZDict(dict):
     """ ZDict supports deep path and multi keys get.
     Please don't use dot in ZDict str key.
