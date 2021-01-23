@@ -107,7 +107,7 @@ class ZDecorators:
                     return func(*args, **kwargs)
                 except exception as e:
                     logger.warning(f'{func.__name__}({args} {kwargs}) -> {e.__str__()}',
-                                   extra={'func_name': 'except_as_None'})
+                                   extra={'func_name': 'exceptAsNone'})
                     return None
 
             return wrap
