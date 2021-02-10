@@ -1,19 +1,20 @@
+"""
+Example:
+    1. Use default logger:
+      >> from zdl.utils.io.log import logger
+    2. Change all loggers in the project, as default logger = orgLogger, it is non-color:
+      >> from zdl.utils.io import log;log.theme(log.Theme.DARK);from zdl.utils.io.log import logger
+      !!should be placed in front of other imports which imported log module.
+    3. Change logger in individual file:
+      >> from zdl.io.log import darkThemeColorLogger as logger
+"""
+
 import logging
 import os
 import sys
 from enum import IntEnum, Enum
 
 import colorlog
-
-# usage:
-#   1. use default logger:
-#       from zdl.utils.io.log import logger
-#   2. change all logger in project, as default logger = orgLogger, it is non-color:
-#       from zdl.utils.io import log;log.theme(log.Theme.DARK);from zdl.utils.io.log import logger
-#       !!should be placed in front of other imports which imported log module.
-#   3. change single file logger mode:
-#       from zdl.io.log import darkThemeColorLogger as logger
-
 
 _CONSOLE_FORMAT = "[%(levelname).1s|%(asctime)s.%(msecs)03d|%(filename)15s:%(lineno)-3s] %(funcName)s(): %(message)s"
 _COLOR_CONSOLE_FORMAT = "%(log_color)s[%(levelname).1s|%(asctime)s.%(msecs)03d|%(filename)15s:%(lineno)-3s] %(funcName)s(): %(message_log_color)s%(message)s"
