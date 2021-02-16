@@ -1,17 +1,16 @@
-"""
+"""Custom logging wrapper.
+
 Example:
-    1. Use default logger:
-      >> from zdl.utils.io.log import logger
-    2. Change all loggers in the project, as default logger = orgLogger, it is non-color:
-      >> from zdl.utils.io import log;log.theme(log.Theme.DARK);from zdl.utils.io.log import logger
-      !!should be placed in front of other imports which imported log module.
-    3. Change logger in individual file:
-      >> from zdl.io.log import darkThemeColorLogger as logger
+    >> from zdl.utils.io.log import logger
+    >> logger.theme(logger.Theme.DARK)
+    >> logger.file('xxx.log')
+    >> logger.error('logger working')
+
+    >> logger = logger.fork(name='local', sync=True)
 """
 
 import logging
 import os
-import sys
 from enum import IntEnum, Enum
 
 import colorlog
@@ -54,112 +53,128 @@ _LIGHT_SECONDARY_LOG_COLORS = {
 }
 
 
-class MyFilter(logging.Filter):
-    def filter(self, record):
-        if hasattr(record, 'func_name'):
-            record.funcName = record.func_name
-        return True
+class LoggerProxy:
+    class Level(IntEnum):
+        DEBUG = logging.DEBUG
+        INFO = logging.INFO
+        WARNING = WARN = logging.WARNING
+        ERROR = logging.ERROR
+        CRITICAL = FATAL = logging.CRITICAL
+
+    class _MyFilter(logging.Filter):
+        def filter(self, record):
+            if hasattr(record, 'func_name'):  # arg name compat
+                record.funcName = record.func_name
+            return True
+
+    class Theme(Enum):
+        ORIGINAL = logging.Formatter(_CONSOLE_FORMAT, _DATEFMT_SHORT)
+        DARK_BG = colorlog.ColoredFormatter(_COLOR_CONSOLE_FORMAT, _DATEFMT_SHORT,
+                                            log_colors=_DARK_THEME_COLORS,
+                                            secondary_log_colors=_DARK_SECONDARY_LOG_COLORS)
+        LIGHT_BG = colorlog.ColoredFormatter(_COLOR_CONSOLE_FORMAT, _DATEFMT_SHORT,
+                                             log_colors=_LIGHT_THEME_COLORS,
+                                             secondary_log_colors=_LIGHT_SECONDARY_LOG_COLORS)
+
+    def __init__(self, name='main', level=logging.DEBUG, global_=True, theme=Theme.ORIGINAL):
+        self._global = global_
+        self._logger = self._getBaseLogger(name)
+        self.config(name=name, level=level, theme=theme)
+
+        self._registerDIWEC(self._logger)
+
+    def _getBaseLogger(self, name):
+        org_logger = logging.getLogger(name)
+        org_logger.addHandler(logging.StreamHandler())
+        org_logger.addFilter(self._MyFilter())
+        return org_logger
+
+    def _registerDIWEC(self, logger):
+        self.debug = self._logger.debug
+        self.info = self._logger.info
+        self.warn = self.warning = self._logger.warning
+        self.error = self._logger.error
+        self.critical = self._logger.critical
+
+    @property
+    def name(self):
+        return self._logger.name
+
+    def theme(self, theme: Theme):
+        for handler in self._logger.handlers:
+            if handler.__class__ == logging.StreamHandler:
+                handler.setFormatter(theme.value)
+
+    def is_global(self):
+        return self._global
+
+    def file(self, file, level=None, mode='w'):
+        """
+        Arguments:
+            mode:
+                'w'：覆盖
+                'a': 追加
+        """
+        for handler in self._logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                if handler.baseFilename == os.path.abspath(file):
+                    handler.setLevel(level)
+                    handler.mode = mode
+                    return
+        file_handler = logging.FileHandler(file, mode, encoding="utf-8")
+        file_handler.setFormatter(logging.Formatter(_FILE_FORMAT))
+        if level is not None:
+            file_handler.setLevel(level)
+        self._logger.addHandler(file_handler)
+
+    def config(self, name=None, level=None, console_level=None, close_stdout=None,
+               close_file=None, theme=None):
+        if name is not None:
+            self._logger.name = name
+
+        if close_stdout is not None:
+            for h in self._logger.handlers:
+                if not isinstance(h, logging.FileHandler):
+                    h.setLevel(level)
+        if console_level is not None:
+            for h in self._logger.handlers:
+                if not isinstance(h, logging.FileHandler):
+                    h.setLevel(level)
+
+        if theme is not None:
+            self.theme(theme)
+
+    def fork(self, name, sync=True):
+        if self.name == name:
+            self._outputError('fork logger name is same as parent, return old logger!!')
+            return self
+
+        new = self.__class__(name, global_=False)
+        if sync:
+            def sync_config(src, dst: LoggerProxy):
+                for src_handler in src._logger.handlers:
+                    if not isinstance(src_handler, logging.FileHandler):
+                        for dst_handler in dst._logger.handlers:
+                            if not isinstance(dst_handler, logging.FileHandler):
+                                dst_handler.setFormatter(src_handler.formatter)
+                                break
+                        break
+
+            sync_config(self, new)
+        return new
+
+    def _outputError(self, m):
+        error_print = self.error if hasattr(self, 'error') else print
+        error_print(m)
+
+    def _test(self, m=None):
+        m = f'{self.name} logger testing.' if m is None else m
+        self.debug(m)
+        self.info(m)
+        self.warning(m)
+        self.error(m)
+        self.critical(m)
 
 
 logging.root.setLevel(logging.DEBUG)
-
-_consoleHandler = logging.StreamHandler()
-_consoleHandler.setFormatter(logging.Formatter(_CONSOLE_FORMAT, _DATEFMT_SHORT))
-_consoleHandler.setLevel(logging.DEBUG)
-
-orgLogger = logging.getLogger('main')
-# logger.setLevel(logging.DEBUG)
-orgLogger.addHandler(_consoleHandler)
-orgLogger.propagate = False
-orgLogger.addFilter(MyFilter())
-
-_darkColorConsoleHandler = colorlog.StreamHandler()
-_darkColorConsoleHandler.setFormatter(
-    colorlog.ColoredFormatter(_COLOR_CONSOLE_FORMAT, _DATEFMT_SHORT,
-                              log_colors=_DARK_THEME_COLORS,
-                              secondary_log_colors=_DARK_SECONDARY_LOG_COLORS))
-
-darkThemeColorLogger = colorlog.getLogger('color.dark')
-darkThemeColorLogger.addHandler(_darkColorConsoleHandler)
-darkThemeColorLogger.propagate = False
-darkThemeColorLogger.addFilter(MyFilter())
-
-_lightColorConsoleHandler = colorlog.StreamHandler()
-_lightColorConsoleHandler.setFormatter(
-    colorlog.ColoredFormatter(_COLOR_CONSOLE_FORMAT, _DATEFMT_SHORT,
-                              log_colors=_LIGHT_THEME_COLORS,
-                              secondary_log_colors=_LIGHT_SECONDARY_LOG_COLORS))
-
-lightThemeColorLogger = colorlog.getLogger('color.light')
-lightThemeColorLogger.addHandler(_lightColorConsoleHandler)
-lightThemeColorLogger.propagate = False
-lightThemeColorLogger.addFilter(MyFilter())
-
-logger = orgLogger
-
-
-class Level(IntEnum):
-    DEBUG = logging.DEBUG
-    INFO = logging.INFO
-    WARNING = WARN = logging.WARNING
-    ERROR = logging.ERROR
-    CRITICAL = FATAL = logging.CRITICAL
-
-
-class Theme(Enum):
-    ORIGINAL = orgLogger
-    DARK = darkThemeColorLogger
-    LIGHT = lightThemeColorLogger
-
-
-def theme(theme_: Theme = Theme.ORIGINAL):
-    global logger
-    ref_count = sys.getrefcount(logger)
-    logger.info(f'logger ref count: {ref_count}')
-    if ref_count > 6:
-        logger.warning('You can only change loggers in other modules, before they are imported!')
-
-    if theme_ in Theme:
-        logger = theme_.value
-    else:
-        logger.error('change log theme failed, theme_ param should be a member of the enum Theme!')
-
-
-def configConsoleLogger(level):
-    # 当同时存在console和file logger时，单独设置console。一般情况直接logger.setLevel即可。
-    # 为了避免麻烦，将color和非color设置合并
-    for h in logger.handlers + darkThemeColorLogger.handlers + lightThemeColorLogger.handlers:
-        if not isinstance(h, logging.FileHandler):
-            h.setLevel(level)
-
-
-def addFileLogger(file, level=logging.DEBUG, mode='w'):
-    # 为了避免麻烦，将color和非color设置合并
-    for handler in logger.handlers:
-        if isinstance(handler, logging.FileHandler):
-            if handler.baseFilename == os.path.abspath(file):
-                return
-    file_handler = logging.FileHandler(file, mode, encoding="utf-8")
-    file_handler.setFormatter(logging.Formatter(_FILE_FORMAT))
-    file_handler.setLevel(level)
-    logger.addHandler(file_handler)
-    darkThemeColorLogger.addHandler(file_handler)
-    lightThemeColorLogger.addHandler(file_handler)
-
-
-def localFileLogger(file, level=logging.DEBUG, mode='w'):
-    local_file_logger = logging.getLogger(file)
-    if len(local_file_logger.handlers) == 0:
-        file_handler = logging.FileHandler(file, mode, encoding="utf-8")
-        file_handler.setFormatter(logging.Formatter(_FILE_FORMAT))
-        file_handler.setLevel(level)
-        local_file_logger.addHandler(file_handler)
-    return local_file_logger
-
-
-def _test():
-    logger.debug('')
-    logger.info('')
-    logger.warning('')
-    logger.error('')
-    logger.critical('')
+logger = LoggerProxy()
