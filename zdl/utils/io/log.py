@@ -12,6 +12,7 @@ Example:
 import logging
 import os
 from enum import IntEnum, Enum
+from typing import Iterator
 
 import colorlog
 
@@ -76,11 +77,12 @@ class LoggerProxy:
                                              log_colors=_LIGHT_THEME_COLORS,
                                              secondary_log_colors=_LIGHT_SECONDARY_LOG_COLORS)
 
-    def __init__(self, name='main', level=logging.DEBUG, global_=True, theme=Theme.ORIGINAL):
+    def __init__(self, name='main', level=Level.DEBUG, global_=True, theme=Theme.ORIGINAL):
         self._global = global_
+        self._theme = theme
+
         self._logger = self._getBaseLogger(name)
         self.config(name=name, level=level, theme=theme)
-
         self._registerDIWEC(self._logger)
 
     def _getBaseLogger(self, name):
@@ -90,59 +92,83 @@ class LoggerProxy:
         return org_logger
 
     def _registerDIWEC(self, logger):
-        self.debug = self._logger.debug
-        self.info = self._logger.info
-        self.warn = self.warning = self._logger.warning
-        self.error = self._logger.error
-        self.critical = self._logger.critical
+        logger = logger or self._logger
+        self.debug = logger.debug
+        self.info = logger.info
+        self.warn = self.warning = logger.warning
+        self.error = logger.error
+        self.critical = self.fatal = logger.critical
+
+    @property
+    def level(self):
+        return self._logger.level
+
+    @property
+    def _iter_file_handlers(self) -> Iterator[logging.FileHandler]:
+        for h in self._logger.handlers:
+            if h.__class__ == logging.FileHandler:
+                yield h
+
+    @property
+    def _iter_console_handlers(self) -> Iterator[logging.StreamHandler]:
+        for h in self._logger.handlers:
+            if h.__class__ == logging.StreamHandler:
+                yield h
 
     @property
     def name(self):
         return self._logger.name
 
     def theme(self, theme: Theme):
-        for handler in self._logger.handlers:
-            if handler.__class__ == logging.StreamHandler:
-                handler.setFormatter(theme.value)
+        self._theme = theme
+        for h in self._iter_console_handlers:
+            h.setFormatter(theme.value)
 
     def is_global(self):
         return self._global
 
-    def file(self, file, level=None, mode='w'):
+    def file(self, file: str, level: Level = None, mode: str = 'w'):
         """
         Arguments:
             mode:
                 'w'：覆盖
                 'a': 追加
         """
-        for handler in self._logger.handlers:
-            if isinstance(handler, logging.FileHandler):
-                if handler.baseFilename == os.path.abspath(file):
-                    handler.setLevel(level)
-                    handler.mode = mode
-                    return
+        for handler in self._iter_file_handlers:
+            if handler.baseFilename == os.path.abspath(file):
+                handler.setLevel(level)
+                handler.mode = mode
+                return
         file_handler = logging.FileHandler(file, mode, encoding="utf-8")
         file_handler.setFormatter(logging.Formatter(_FILE_FORMAT))
-        if level is not None:
+        if level:
             file_handler.setLevel(level)
         self._logger.addHandler(file_handler)
 
-    def config(self, name=None, level=None, console_level=None, close_stdout=None,
-               close_file=None, theme=None):
+    def config(self, name: str = None, level: Level = None, theme: Theme = None, pid: bool = None,
+               console_level: Level = None, file_level: Level = None,
+               close_stdout: bool = None, close_file: bool = None):
         if name is not None:
             self._logger.name = name
-
-        if close_stdout is not None:
-            for h in self._logger.handlers:
-                if not isinstance(h, logging.FileHandler):
-                    h.setLevel(level)
-        if console_level is not None:
-            for h in self._logger.handlers:
-                if not isinstance(h, logging.FileHandler):
-                    h.setLevel(level)
-
-        if theme is not None:
+        if level:
+            self._logger.setLevel(level)
+        if theme:
             self.theme(theme)
+        if pid:
+            pass
+
+        if console_level:
+            for h in self._iter_console_handlers:
+                h.setLevel(console_level)
+        if close_stdout:
+            for h in self._iter_console_handlers:
+                self._logger.removeHandler(h)
+        if file_level:
+            for h in self._iter_file_handlers:
+                h.setLevel(file_level)
+        if close_file:
+            for h in self._iter_file_handlers:
+                self._logger.removeHandler(h)
 
     def fork(self, name, sync=True):
         if self.name == name:
@@ -151,14 +177,11 @@ class LoggerProxy:
 
         new = self.__class__(name, global_=False)
         if sync:
-            def sync_config(src, dst: LoggerProxy):
-                for src_handler in src._logger.handlers:
-                    if not isinstance(src_handler, logging.FileHandler):
-                        for dst_handler in dst._logger.handlers:
-                            if not isinstance(dst_handler, logging.FileHandler):
-                                dst_handler.setFormatter(src_handler.formatter)
-                                break
-                        break
+            def sync_config(src: LoggerProxy, dst: LoggerProxy):
+                for src_console_handler in src._iter_console_handlers:
+                    for dst_console_handler in dst._iter_console_handlers:
+                        dst_console_handler.setFormatter(src_console_handler.formatter)
+                    break
 
             sync_config(self, new)
         return new
