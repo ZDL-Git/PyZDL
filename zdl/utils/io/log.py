@@ -56,6 +56,7 @@ _LIGHT_SECONDARY_LOG_COLORS = {
 
 class LoggerProxy:
     class Level(IntEnum):
+        NOTSET = logging.NOTSET
         DEBUG = logging.DEBUG
         INFO = logging.INFO
         WARNING = WARN = logging.WARNING
@@ -98,6 +99,7 @@ class LoggerProxy:
         self.warn = self.warning = logger.warning
         self.error = logger.error
         self.critical = self.fatal = logger.critical
+        self.exception = logger.exception
 
         self.setLevel = self._logger.setLevel
         self.removeHandler = self._logger.removeHandler
@@ -130,6 +132,7 @@ class LoggerProxy:
     def isGlobal(self):
         return self._global
 
+    # TODO: 实现rotate
     def file(self, file: str, level: Level = None, mode: str = 'w'):
         """
         Arguments:
