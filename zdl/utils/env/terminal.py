@@ -1,3 +1,4 @@
+import platform
 import subprocess
 
 from zdl.utils.io.log import logger
@@ -17,4 +18,5 @@ class Terminal:
         """
         logger.debug(command)
         output = subprocess.check_output(command, shell=True)
-        return output.decode("utf-8")
+        encoding = 'gbk' if platform.system() == 'Windows' else 'utf-8'
+        return output.decode(encoding)
